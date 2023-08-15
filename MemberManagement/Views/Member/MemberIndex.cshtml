@@ -1,0 +1,147 @@
+﻿@model IEnumerable<MemberManagement.Data.Member>
+@{
+    Pager pager = new Pager();
+    int pageNo = 0;
+    if(ViewBag.Pager != null)
+    {
+        pager = ViewBag.Pager;
+        pageNo = pager.CurrentPage;
+    }
+}
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Member";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Member List</h1>
+
+@using (Html.BeginForm("MemberIndex", "Member", FormMethod.Post, new { @class = "navbar-form navbar-right" }))
+{
+    <div class="row pt-4 pb-3">
+        <div class="form-group col-6 flex-fill">
+            <input type="text" name="strSearch" placeholder="Search for User Name" />
+            <button type="submit" class="btn btn-dark">
+                <i class="bi bi-search"></i> Search
+            </button>
+        </div>
+        <btn class="col-6 text-end">
+            <a asp-controller="Member" asp-action="Create" class="btn btn-dark">
+                <i class="bi bi-person-plus"></i> Create New
+            </a>
+        </btn>
+    </div>
+}
+
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateOfBirth)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Gender)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JoinedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PhoneNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateOfBirth)
+                </td>
+                <td>
+                    @(item.Gender ? "Male" : "Female")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.JoinedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address)
+                </td> 
+                <td>
+                    <div class="w-75 btn-group" role="group">
+                        <a asp-controller="Member" asp-action="Edit" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a> |
+                        <a asp-controller="Member" asp-action="Get" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex">
+                            <i class="bi bi-info-circle-fill"></i> Detail
+                        </a> |
+                        <a asp-controller="Member" asp-action="Delete" asp-route-MemberId="@item.MemberId" class="btn text-danger d-flex mx-2">
+                            <i class="bi bi-person-dash-fill"></i> Delete
+                        </a>
+                    </div>
+                    
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="container">
+    @if(pager.TotalPages > 0)
+    {
+        <ul class="pagination justify-content-end">
+            @if(pager.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="@(pager.CurrentPage - 1)">Previous</a>
+                </li>
+            }
+            @for(var pge = pager.StartPage; pge <= pager.EndPage; pge++)
+            {
+                <li class="page-item @(pge == pager.CurrentPage ? "active" :"")">
+                    <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="@pge">@pge</a>
+                </li>
+            }
+            @if(pager.CurrentPage < pager.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="@(pager.CurrentPage + 1)">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="@(pager.TotalPages)">Last</a>
+                </li>
+            }
+        </ul>
+    }
+</div>
