@@ -58,6 +58,13 @@
                     <span asp-validation-for="Address" class="text-danger"></span>
                 </div>
                 <div class="form-group">
+                    <label asp-for="StudioID" class="control-label"></label>
+                    <select asp-for="StudioID" asp-items="ViewBag.StudioList" class="form-select">
+                        <option disabled selected>--Select Studio--</option>
+                    </select>
+                    <span asp-validation-for="StudioID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
                     <label asp-for="ImageUrl" class="control-label"></label>
                     <input type="file" name="file" class="form-control" />
                 </div>

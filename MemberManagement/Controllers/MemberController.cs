@@ -99,6 +99,12 @@ namespace MemberManagement.Controllers
             {
                 return NotFound();
             }
+            IEnumerable<SelectListItem> StudioList = _db.Studio.Select(u => new SelectListItem
+            {
+                Text = u.StudioName,
+                Value = u.StudioID.ToString()
+            });
+            ViewBag.StudioList = StudioList;
             return View(memberFromDb);
         }
         [HttpPost]
@@ -138,7 +144,16 @@ namespace MemberManagement.Controllers
                 TempData["success"] = "Member updated successfully";
                 return RedirectToAction("MemberIndex");
             }
-            return View();
+            else
+            {
+                IEnumerable<SelectListItem> StudioList = _db.Studio.Select(u => new SelectListItem
+                {
+                    Text = u.StudioName,
+                    Value = u.StudioID.ToString()
+                });
+                ViewBag.StudioList = StudioList;
+                return View();
+            }
         }
         public IActionResult Delete(int? MemberId)
         {
