@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
+using AutoMapper.Execution;
+using System.Diagnostics.Metrics;
 
 namespace MemberManagement.Controllers
 {
@@ -13,21 +16,29 @@ namespace MemberManagement.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly MyDbContext _context;
-        
-        public HomeController(ILogger<HomeController> logger, MyDbContext context)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public HomeController(ILogger<HomeController> logger, MyDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
-        public IActionResult Index(string strSearch)
+        public IActionResult Index(string strSearch, int pg = 1)
         {
-            var members = _context.Member.ToList();
-            if (!String.IsNullOrEmpty(strSearch))
+            List<Studio> studioList = _context.Studio.ToList();
+            if (!string.IsNullOrEmpty(strSearch))
             {
-                members = members.Where(x => x.UserName.Contains(strSearch)).ToList();
+                studioList = studioList.Where(x => x.StudioName.Contains(strSearch)).ToList();
             }
-            return View(members);
+            const int pageSize = 9;
+            if (pg < 1) pg = 1;
+            int recsCount = studioList.Count();
+            var paper = new Pager(recsCount, pg, pageSize);
+            int recSkip = (pg - 1) * pageSize;
+            var data = studioList.Skip(recSkip).Take(paper.PageSize).ToList();
+            this.ViewBag.Pager = paper;
+            return View(data);
         }
 
         public IActionResult Privacy()
@@ -40,53 +51,136 @@ namespace MemberManagement.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-        /*
-        public ActionResult Create()
+
+        public IActionResult Create()
         {
             return View();
         }
+
         [HttpPost]
-        public ActionResult Create(Member member)
+        public IActionResult Create(Studio stu, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
-                MemberList memberList = new MemberList();
-                memberList.AddMember(member);
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                if (file != null)
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string studioPath = Path.Combine(wwwRootPath, @"images/studio");
+
+                    using (var fileStream = new FileStream(Path.Combine(studioPath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+
+                    stu.StudioPic = @"\images\studio\" + fileName;
+                }
+
+                _context.Studio.Add(stu);
+                _context.SaveChanges();
+                TempData["success"] = "New Studio created successfully";
                 return RedirectToAction("Index");
             }
             return View();
         }
-        public ActionResult Edit(string memberId = "")
+
+        public IActionResult Edit(int? StudioID)
         {
-            MemberList memberList = new MemberList();
-            List<Member> members = memberList.getMember(memberId);
-            return View(members.FirstOrDefault());
+            if (StudioID == null || StudioID == 0)
+            {
+                return NotFound();
+            }
+            Studio? studioFromDb = _context.Studio.Find(StudioID);
+            if (studioFromDb == null)
+            {
+                return NotFound();
+            }
+            return View(studioFromDb);
         }
         [HttpPost]
-        public ActionResult Edit(Member member)
+        public IActionResult Edit(Studio stu, IFormFile? file)
         {
-            MemberList memlist = new MemberList();
-            memlist.UpdateMember(member);
+            if (ModelState.IsValid)
+            {
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                if (file != null)
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string studioPath = Path.Combine(wwwRootPath, @"images/studio");
+
+                    if (!string.IsNullOrEmpty(stu.StudioPic))
+                    {
+                        //delete ola image
+                        var oldImagePath =
+                            Path.Combine(wwwRootPath, stu.StudioPic.TrimStart('\\'));
+
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+
+                    using (var fileStream = new FileStream(Path.Combine(studioPath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+
+                    stu.StudioPic = @"\images\studio\" + fileName;
+                }
+
+                _context.Studio.Update(stu);
+                _context.SaveChanges();
+                TempData["success"] = "Studio updated successfully";
+                return RedirectToAction("Index");
+            }
+            return View();
+        }
+
+        public IActionResult Delete(int? StudioID)
+        {
+            if (StudioID == null || StudioID == 0)
+            {
+                return NotFound();
+            }
+            Studio? studioFromDb = _context.Studio.Find(StudioID);
+            if (studioFromDb == null)
+            {
+                return NotFound();
+            }
+            return View(studioFromDb);
+        }
+        //[Route("studio/Delete")]
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeletePOST(int? StudioID)
+        {
+            Studio? obj = _context.Studio.Find(StudioID);
+            if (obj == null)
+            {
+                return NotFound();
+            }
+            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, obj.StudioPic.TrimStart('\\'));
+            if (System.IO.File.Exists(oldImagePath))
+            {
+                System.IO.File.Delete(oldImagePath);
+            }
+            _context.Studio.Remove(obj);
+            _context.SaveChanges();
+            TempData["success"] = "Studio deleted successfully";
             return RedirectToAction("Index");
         }
-        public ActionResult Detail(string memberId = "")
+
+        public ActionResult Get(int? StudioID)
         {
-            MemberList memberList = new MemberList();
-            List<Member> obj = memberList.getMember(memberId);
-            return View(obj.FirstOrDefault());
+            if (StudioID == null || StudioID == 0)
+            {
+                return NotFound();
+            }
+            Studio? studioFromDb = _context.Studio.Find(StudioID);
+            if (studioFromDb == null)
+            {
+                return NotFound();
+            }
+            return View(studioFromDb);
         }
-        public ActionResult Delete(string memberId = "")
-        {
-            MemberList memberList = new MemberList();
-            List<Member> obj = memberList.getMember(memberId);
-            return View(obj.FirstOrDefault());
-        }
-        [HttpPost]
-        public ActionResult Delete(Member mem)
-        {
-            MemberList memberList = new MemberList();
-            memberList.DeleteMember(mem);
-            return RedirectToAction("Index");
-        }*/
     }
 }

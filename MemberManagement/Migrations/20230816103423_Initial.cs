@@ -24,7 +24,7 @@ namespace MemberManagement.Migrations
                     MemberUUId = table.Column<string>(type: "varchar(36)", maxLength: 36, nullable: false),
                     UserName = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
                     FullName = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
-                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Email = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     PhoneNumber = table.Column<string>(type: "varchar(13)", maxLength: 13, nullable: false),
                     Gender = table.Column<ulong>(type: "bit", nullable: false),
@@ -32,11 +32,29 @@ namespace MemberManagement.Migrations
                     JoinedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    IsDeleted = table.Column<ulong>(type: "bit", nullable: false)
+                    IsDeleted = table.Column<ulong>(type: "bit", nullable: false),
+                    ImageUrl = table.Column<string>(type: "longtext", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Member", x => x.MemberId);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Studio",
+                columns: table => new
+                {
+                    StudioID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    StudioName = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
+                    StudioAddress = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
+                    StudioPhone = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
+                    StudioPic = table.Column<string>(type: "longtext", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Studio", x => x.StudioID);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
         }
@@ -46,6 +64,9 @@ namespace MemberManagement.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Member");
+
+            migrationBuilder.DropTable(
+                name: "Studio");
         }
     }
 }

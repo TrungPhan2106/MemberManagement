@@ -17,6 +17,7 @@ namespace MemberManagement.Data
         {
         }
         public DbSet<Member> Member { get; set; }
+        public DbSet<Studio> Studio { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

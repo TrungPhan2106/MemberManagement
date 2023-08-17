@@ -15,11 +15,13 @@ namespace MemberManagement.Controllers
         private readonly ILogger<MemberController> _logger;
         private readonly IMapper _mapper;
         private readonly MyDbContext _db;
-        public MemberController(IMapper mapper,ILogger<MemberController> logger, MyDbContext db)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public MemberController(IMapper mapper,ILogger<MemberController> logger, MyDbContext db, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
             _db = db;
             _mapper = mapper;
+            _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult MemberIndex(string strSearch, int pg=1)
         {
@@ -44,10 +46,24 @@ namespace MemberManagement.Controllers
         }
         
         [HttpPost]
-        public IActionResult Create(Member member)
+        public IActionResult Create(Member member, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                if(file != null)
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string memberPath = Path.Combine(wwwRootPath, @"images/member");
+
+                    using (var fileStream = new FileStream(Path.Combine(memberPath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+
+                    member.ImageUrl = @"\images\member\" + fileName;
+                }
+
                 member.MemberUUId = Guid.NewGuid().ToString();
                 _db.Member.Add(member);
                 _db.SaveChanges();
@@ -71,10 +87,36 @@ namespace MemberManagement.Controllers
             return View(memberFromDb);
         }
         [HttpPost]
-        public IActionResult Edit(Member member)
+        public IActionResult Edit(Member member, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                if (file != null)
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string memberPath = Path.Combine(wwwRootPath, @"images/member");
+
+                    if(!string.IsNullOrEmpty(member.ImageUrl)) 
+                    { 
+                        //delete ola image
+                        var oldImagePath = 
+                            Path.Combine(wwwRootPath, member.ImageUrl.TrimStart('\\'));
+
+                        if(System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+
+                    using (var fileStream = new FileStream(Path.Combine(memberPath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+
+                    member.ImageUrl = @"\images\member\" + fileName;
+                }
+
                 member.UpdatedDate = DateTime.Now;
                 _db.Member.Update(member);
                 _db.SaveChanges();
@@ -104,6 +146,13 @@ namespace MemberManagement.Controllers
             {
                 return NotFound();
             }
+
+            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, obj.ImageUrl.TrimStart('\\'));
+            if (System.IO.File.Exists(oldImagePath))
+            {
+                System.IO.File.Delete(oldImagePath);
+            }
+
             _db.Member.Remove(obj);
             _db.SaveChanges();
             TempData["success"] = "Member deleted successfully";

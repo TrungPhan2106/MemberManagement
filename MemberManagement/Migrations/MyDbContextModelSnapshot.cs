@@ -33,8 +33,8 @@ namespace MemberManagement.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateOnly>("DateOfBirth")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -48,6 +48,9 @@ namespace MemberManagement.Migrations
 
                     b.Property<short>("Gender")
                         .HasColumnType("bit");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("longtext");
 
                     b.Property<short>("IsDeleted")
                         .HasColumnType("bit");
@@ -76,6 +79,35 @@ namespace MemberManagement.Migrations
                     b.HasKey("MemberId");
 
                     b.ToTable("Member");
+                });
+
+            modelBuilder.Entity("MemberManagement.Data.Studio", b =>
+                {
+                    b.Property<int>("StudioID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("StudioAddress")
+                        .IsRequired()
+                        .HasMaxLength(45)
+                        .HasColumnType("varchar(45)");
+
+                    b.Property<string>("StudioName")
+                        .IsRequired()
+                        .HasMaxLength(45)
+                        .HasColumnType("varchar(45)");
+
+                    b.Property<string>("StudioPhone")
+                        .IsRequired()
+                        .HasMaxLength(45)
+                        .HasColumnType("varchar(45)");
+
+                    b.Property<string>("StudioPic")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("StudioID");
+
+                    b.ToTable("Studio");
                 });
 #pragma warning restore 612, 618
         }
