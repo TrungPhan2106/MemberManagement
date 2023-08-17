@@ -14,7 +14,7 @@ namespace MemberManagement.Data
         [MaxLength(45)]
         [DisplayName("Studio Name")]
         public string StudioName { get; set; }
-        [MaxLength(45)]
+        [MaxLength(100)]
         [DisplayName("Address")]
         public string StudioAddress { get; set; }
         [MaxLength(45)]

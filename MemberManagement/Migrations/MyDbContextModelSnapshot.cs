@@ -68,6 +68,9 @@ namespace MemberManagement.Migrations
                         .HasMaxLength(13)
                         .HasColumnType("varchar(13)");
 
+                    b.Property<int>("StudioID")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime(6)");
 
@@ -89,8 +92,8 @@ namespace MemberManagement.Migrations
 
                     b.Property<string>("StudioAddress")
                         .IsRequired()
-                        .HasMaxLength(45)
-                        .HasColumnType("varchar(45)");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("StudioName")
                         .IsRequired()

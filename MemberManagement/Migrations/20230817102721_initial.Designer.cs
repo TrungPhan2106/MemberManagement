@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MemberManagement.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20230816103423_Initial")]
-    partial class Initial
+    [Migration("20230817102721_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,6 +71,9 @@ namespace MemberManagement.Migrations
                         .HasMaxLength(13)
                         .HasColumnType("varchar(13)");
 
+                    b.Property<int>("StudioID")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime(6)");
 
@@ -92,8 +95,8 @@ namespace MemberManagement.Migrations
 
                     b.Property<string>("StudioAddress")
                         .IsRequired()
-                        .HasMaxLength(45)
-                        .HasColumnType("varchar(45)");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("StudioName")
                         .IsRequired()

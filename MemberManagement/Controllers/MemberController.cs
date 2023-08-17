@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using MemberManagement.Models;
-
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace MemberManagement.Controllers
 {
@@ -42,6 +43,12 @@ namespace MemberManagement.Controllers
     
         public IActionResult Create()
         {
+            IEnumerable<SelectListItem> StudioList = _db.Studio.Select(u => new SelectListItem
+            {
+                Text = u.StudioName,
+                Value = u.StudioID.ToString()
+            });
+            ViewBag.StudioList = StudioList;
             return View();
         }
         
@@ -60,17 +67,25 @@ namespace MemberManagement.Controllers
                     {
                         file.CopyTo(fileStream);
                     }
-
                     member.ImageUrl = @"\images\member\" + fileName;
                 }
 
                 member.MemberUUId = Guid.NewGuid().ToString();
                 _db.Member.Add(member);
                 _db.SaveChanges();
-                TempData["success"] = "Member created successfully";
+                TempData["success"] = "Member updated successfully";
                 return RedirectToAction("MemberIndex");
             }
-            return View();
+            else
+            {
+                IEnumerable<SelectListItem> StudioList = _db.Studio.Select(u => new SelectListItem
+                {
+                    Text = u.StudioName,
+                    Value = u.StudioID.ToString()
+                });
+                ViewBag.StudioList = StudioList;
+                return View();
+            }
         }
 
         public IActionResult Edit(int? MemberId) 

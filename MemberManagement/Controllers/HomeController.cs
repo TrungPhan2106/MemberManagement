@@ -31,7 +31,7 @@ namespace MemberManagement.Controllers
             {
                 studioList = studioList.Where(x => x.StudioName.Contains(strSearch)).ToList();
             }
-            const int pageSize = 9;
+            const int pageSize = 8;
             if (pg < 1) pg = 1;
             int recsCount = studioList.Count();
             var paper = new Pager(recsCount, pg, pageSize);

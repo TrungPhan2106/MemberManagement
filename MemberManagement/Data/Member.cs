@@ -1,6 +1,8 @@
 ﻿using MemberManagement.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -40,5 +42,8 @@ namespace MemberManagement.Data
         public bool IsDeleted { get; set; }
         [DisplayName("Avatar")]
         public string? ImageUrl { get; set; }
+        [ForeignKey("StudioID")]
+       // [ValidateNever]
+        public int StudioID { get; set; }
     }
 }

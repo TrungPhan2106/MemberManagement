@@ -16,8 +16,10 @@
     ViewData["Title"] = "Member";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div style="background:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXH1axTbWGSjfPrzLTTptcZsS55wImWfgoqw&usqp=CAU'); height:300px; width:100%; background-repeat:no-repeat; background-size:100%;">
+    <h1 class="text-light text-opacity-75" style="text-align:center; font-size:60px;justify-content:center">Member List</h1>
+</div>
 
-<h1>Member List</h1>
 
 @using (Html.BeginForm("MemberIndex", "Member", FormMethod.Post, new { @class = "navbar-form navbar-right" }))
 {
@@ -39,7 +41,7 @@
 
 <table class="table table-hover">
     <thead>
-        <tr>
+        <tr style="text-align:center">
             <th>
                 @Html.DisplayNameFor(model => model.UserName)
             </th>
@@ -63,6 +65,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StudioID)
             </th>
             <th></th>
         </tr>
@@ -94,17 +99,20 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Address)
-                </td> 
+                </td>
                 <td>
-                    <div class="w-75 btn-group" role="group">
-                        <a asp-controller="Member" asp-action="Edit" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex">
-                            <i class="bi bi-pencil-square"></i> Edit
-                        </a> |
+                    @Html.DisplayFor(modelItem => item.StudioID)
+                </td>
+                <td>
+                    <div class="w-50 btn-group" role="group">
+                        <a asp-controller="Member" asp-action="Edit" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex" >
+                            <i class="bi bi-pencil-square"></i>
+                        </a> 
                         <a asp-controller="Member" asp-action="Get" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex">
-                            <i class="bi bi-info-circle-fill"></i> Detail
-                        </a> |
+                            <i class="bi bi-info-circle-fill"></i>
+                        </a> 
                         <a asp-controller="Member" asp-action="Delete" asp-route-MemberId="@item.MemberId" class="btn text-danger d-flex mx-2">
-                            <i class="bi bi-person-dash-fill"></i> Delete
+                            <i class="bi bi-person-dash-fill"></i>
                         </a>
                     </div>
                     

@@ -7,7 +7,7 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace MemberManagement.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,7 +33,8 @@ namespace MemberManagement.Migrations
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     IsDeleted = table.Column<ulong>(type: "bit", nullable: false),
-                    ImageUrl = table.Column<string>(type: "longtext", nullable: true)
+                    ImageUrl = table.Column<string>(type: "longtext", nullable: true),
+                    StudioID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -48,7 +49,7 @@ namespace MemberManagement.Migrations
                     StudioID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     StudioName = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
-                    StudioAddress = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
+                    StudioAddress = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
                     StudioPhone = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
                     StudioPic = table.Column<string>(type: "longtext", nullable: true)
                 },

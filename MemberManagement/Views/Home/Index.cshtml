@@ -35,21 +35,61 @@
         <div class="col-lg-3 colcol-sm-6">
             <div class="row p-2">
                 <div class="col-12 p-1">
-                    <div class="card border-0 p-3 shadow border-top border-5 rounded">
-                        <a asp-controller="Home" asp-action="Delete" asp-route-StudioID="@studio.StudioID">
-                            <i class="bi bi-x-circle"></i>
-                        </a>
-                        <img src="@studio.StudioPic" class="card-img-top rounded"/>
+                    <div class="card border-0 p-3 shadow border-top border-5 rounded" style="height: 400px">
+                        <div class="btn-group justify-content-end" role="group">
+                            <a asp-controller="Home" asp-action="Edit" asp-route-StudioID="@studio.StudioID" class="mx-2 text-black">
+                                <i class="bi bi-tools"></i>
+                            </a>
+                            <a asp-controller="Home" asp-action="Get" asp-route-StudioID="@studio.StudioID" class="mx-2 text-black">
+                                <i class="bi bi-info-circle"></i>
+                            </a>
+                            <a asp-controller="Home" asp-action="Delete" asp-route-StudioID="@studio.StudioID" class="mx-2 text-danger">
+                                <i class="bi bi-x-circle"></i>
+                            </a> 
+                        </div>
+                        <img src="@studio.StudioPic" class="card-img-top rounded" style="width:100%; height:200px"/>
                         <div class="pl-1">
-                            <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">@studio.StudioName</p>
+                            <p class="card-title h5 text-danger text-uppercase text-center" style="font-weight:bold">@studio.StudioName</p>
                         </div>
                         <div class="pl-1">
-                            <p class="card-title h5 text-dark opacity-75 text-danger">Contact: @studio.StudioPhone</p>
-                            <p class="card-title h5 text-dark opacity-75">Address: @studio.StudioAddress</p>
+                            <p class="card-title h6 text-dark opacity-75">Contact: @studio.StudioPhone</p>
+                            <p class="card-title h6 text-dark opacity-75">Address: @studio.StudioAddress</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    }
+</div>
+
+<div class="container">
+    @if (pager.TotalPages > 0)
+    {
+        <ul class="pagination justify-content-end">
+            @if (pager.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-controller="Home" asp-action="Index" asp-route-pg="1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" asp-controller="Home" asp-action="Index" asp-route-pg="@(pager.CurrentPage - 1)">Previous</a>
+                </li>
+            }
+            @for (var pge = pager.StartPage; pge <= pager.EndPage; pge++)
+            {
+                <li class="page-item @(pge == pager.CurrentPage ? "active" :"")">
+                    <a class="page-link" asp-controller="Home" asp-action="Index" asp-route-pg="@pge">@pge</a>
+                </li>
+            }
+            @if (pager.CurrentPage < pager.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-controller="Home" asp-action="Index" asp-route-pg="@(pager.CurrentPage + 1)">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" asp-controller="Home" asp-action="Index" asp-route-pg="@(pager.TotalPages)">Last</a>
+                </li>
+            }
+        </ul>
     }
 </div>
