@@ -1,5 +1,5 @@
-﻿using StudioManagement.Data;
-using StudioManagement.Models;
+﻿using MemberManagement.Data;
+using MemberManagement.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Configuration;
 
-namespace StudioManagement.Data
+namespace MemberManagement.Data
 {
     public class MyDbContext : DbContext
     {

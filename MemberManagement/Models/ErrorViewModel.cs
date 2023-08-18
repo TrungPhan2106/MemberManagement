@@ -1,4 +1,4 @@
-namespace MemberManagement.Models
+namespace StudioManagement.Models
 {
     public class ErrorViewModel
     {

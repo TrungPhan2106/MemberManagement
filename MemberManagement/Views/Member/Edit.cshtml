@@ -1,19 +1,22 @@
-﻿@model MemberManagement.Data.Member
+﻿@model StudioManagement.Data.Member
 
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
-
-<h4>Member</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<div>
+    <div class="card-header bg-secondary bg-gradient py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Eidt Member</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
         <form asp-action="Edit" enctype="multipart/form-data" method="post">
             <input asp-for="ImageUrl" hidden />
-            <div>
+            <div class="border p-3 mt-4">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="MemberId" />
                 <input type="hidden" asp-for="MemberUUId" />
@@ -21,59 +24,61 @@
                 <input type="hidden" asp-for="UpdatedDate" />
                 <input type="hidden" asp-for="JoinedDate" />
 
-                <div class="form-group">
-                    <label asp-for="UserName" class="control-label"></label>
+                <div class="mb-3 row p-1">
+                    <label asp-for="UserName" class="p-0"></label>
                     <input asp-for="UserName" class="form-control" />
                     <span asp-validation-for="UserName" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="FullName" class="control-label"></label>
+                <div class="mb-3 row p-1">
+                    <label asp-for="FullName" class="p-0"></label>
                     <input asp-for="FullName" class="form-control" />
                     <span asp-validation-for="FullName" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="DateOfBirth" class="control-label"></label>
+                <div class="mb-3 row p-1">
+                    <label asp-for="DateOfBirth" class="p-0"></label>
                     <input asp-for="DateOfBirth" class="form-control" />
                     <span asp-validation-for="DateOfBirth" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="Email" class="control-label"></label>
+                <div class="mb-3 row p-1">
+                    <label asp-for="Email" class="p-0"></label>
                     <input asp-for="Email" class="form-control" />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="PhoneNumber" class="control-label"></label>
+                <div class="mb-3 row p-1">
+                    <label asp-for="PhoneNumber" class="p-0"></label>
                     <input asp-for="PhoneNumber" class="form-control" />
                     <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                 </div>
-                <div class="form-group form-check">
-                    <label class="form-check-label">
-                        <input class="form-check-input" asp-for="Gender" />
-                        @Html.DisplayNameFor(model => model.Gender)
-                    </label>
+                <div class="mb-3 row p-1">
+                    <label class="form-check-label p-0" asp-for="Gender"></label>
+                    <input class="form-check-input" asp-for="Gender" />
+                    (Y)Male / (N)Female
                 </div>
-                <div class="form-group">
-                    <label asp-for="Address" class="control-label"></label>
+                <div class="mb-3 row p-1">
+                    <label asp-for="Address" class="p-0"></label>
                     <input asp-for="Address" class="form-control" />
                     <span asp-validation-for="Address" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="StudioID" class="control-label"></label>
+                <div class="mb-3 row p-1">
+                    <label asp-for="StudioID" class="p-0"></label>
                     <select asp-for="StudioID" asp-items="ViewBag.StudioList" class="form-select">
                         <option disabled selected>--Select Studio--</option>
                     </select>
                     <span asp-validation-for="StudioID" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="ImageUrl" class="control-label"></label>
+                <div class="mb-3 row p-1">
+                    <label asp-for="ImageUrl" class="p-0"></label>
                     <input type="file" name="file" class="form-control" />
                 </div>
-                <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />
-                    <a asp-action="Index">Back to List</a>
+                <div class="row">
+                    <div class="col-6 col-md-3">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                        <a asp-action="Index">Back to List</a>
+                    </div>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
 

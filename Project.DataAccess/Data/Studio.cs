@@ -1,10 +1,10 @@
-﻿using StudioManagement.Models;
+﻿using MemberManagement.Models;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace StudioManagement.Data
+namespace MemberManagement.Data
 {
     public class Studio
     {

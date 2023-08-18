@@ -1,4 +1,4 @@
-﻿using StudioManagement.Models;
+﻿using MemberManagement.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 
 
-namespace StudioManagement.Data
+namespace MemberManagement.Data
 {
     public class Member
     {

@@ -1,5 +1,5 @@
-﻿using MemberManagement.Data;
-using MemberManagement.Models;
+﻿using StudioManagement.Data;
+using StudioManagement.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -9,24 +9,25 @@ using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using AutoMapper.Execution;
 using System.Diagnostics.Metrics;
+using StudioManagement.Repository.IRepository;
 
-namespace MemberManagement.Controllers
+namespace StudioManagement.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly MyDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public HomeController(ILogger<HomeController> logger, MyDbContext context, IWebHostEnvironment webHostEnvironment)
+        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
-            _context = context;
+            _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult Index(string strSearch, int pg = 1)
         {
-            List<Studio> studioList = _context.Studio.ToList();
+            List<Studio> studioList = _unitOfWork.Studio.GetAll().ToList();
             if (!string.IsNullOrEmpty(strSearch))
             {
                 studioList = studioList.Where(x => x.StudioName.Contains(strSearch)).ToList();
@@ -76,8 +77,8 @@ namespace MemberManagement.Controllers
                     stu.StudioPic = @"\images\studio\" + fileName;
                 }
 
-                _context.Studio.Add(stu);
-                _context.SaveChanges();
+                _unitOfWork.Studio.Add(stu);
+                _unitOfWork.Save();
                 TempData["success"] = "New Studio created successfully";
                 return RedirectToAction("Index");
             }
@@ -90,7 +91,7 @@ namespace MemberManagement.Controllers
             {
                 return NotFound();
             }
-            Studio? studioFromDb = _context.Studio.Find(StudioID);
+            Studio? studioFromDb = _unitOfWork.Studio.Get(u => u.StudioID == StudioID);
             if (studioFromDb == null)
             {
                 return NotFound();
@@ -128,8 +129,8 @@ namespace MemberManagement.Controllers
                     stu.StudioPic = @"\images\studio\" + fileName;
                 }
 
-                _context.Studio.Update(stu);
-                _context.SaveChanges();
+                _unitOfWork.Studio.Update(stu);
+                _unitOfWork.Save();
                 TempData["success"] = "Studio updated successfully";
                 return RedirectToAction("Index");
             }
@@ -142,7 +143,7 @@ namespace MemberManagement.Controllers
             {
                 return NotFound();
             }
-            Studio? studioFromDb = _context.Studio.Find(StudioID);
+            Studio? studioFromDb = _unitOfWork.Studio.Get(u => u.StudioID == StudioID);
             if (studioFromDb == null)
             {
                 return NotFound();
@@ -153,7 +154,7 @@ namespace MemberManagement.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePOST(int? StudioID)
         {
-            Studio? obj = _context.Studio.Find(StudioID);
+            Studio? obj = _unitOfWork.Studio.Get(u => u.StudioID == StudioID);
             if (obj == null)
             {
                 return NotFound();
@@ -163,8 +164,8 @@ namespace MemberManagement.Controllers
             {
                 System.IO.File.Delete(oldImagePath);
             }
-            _context.Studio.Remove(obj);
-            _context.SaveChanges();
+            _unitOfWork.Studio.Remove(obj);
+            _unitOfWork.Save();
             TempData["success"] = "Studio deleted successfully";
             return RedirectToAction("Index");
         }
@@ -175,7 +176,7 @@ namespace MemberManagement.Controllers
             {
                 return NotFound();
             }
-            Studio? studioFromDb = _context.Studio.Find(StudioID);
+            Studio? studioFromDb = _unitOfWork.Studio.Get(u => u.StudioID == StudioID);
             if (studioFromDb == null)
             {
                 return NotFound();

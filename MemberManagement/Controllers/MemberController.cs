@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
-using MemberManagement.Data;
+using StudioManagement.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using MemberManagement.Models;
+using StudioManagement.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 
-namespace MemberManagement.Controllers
+namespace StudioManagement.Controllers
 {
     public class MemberController : Controller
     {

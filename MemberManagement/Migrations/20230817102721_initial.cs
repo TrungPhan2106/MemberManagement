@@ -4,7 +4,7 @@ using MySql.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-namespace MemberManagement.Migrations
+namespace StudioManagement.Migrations
 {
     /// <inheritdoc />
     public partial class initial : Migration

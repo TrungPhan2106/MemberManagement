@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MemberManagement.Models
+namespace StudioManagement.Models
 {
     public class Pager
     {

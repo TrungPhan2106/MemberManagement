@@ -2,7 +2,7 @@
 using MySql.Data.MySqlClient;
 using System.ComponentModel.DataAnnotations;
 
-namespace StudioManagement.Data
+namespace MemberManagement.Data
 {
     public class MemberDto
     {

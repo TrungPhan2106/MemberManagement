@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MemberManagement.Data.Member>
+﻿@model IEnumerable<StudioManagement.Data.Member>
 @{
     Pager pager = new Pager();
     int pageNo = 0;
@@ -16,21 +16,16 @@
     ViewData["Title"] = "Member";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div style="background:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXH1axTbWGSjfPrzLTTptcZsS55wImWfgoqw&usqp=CAU'); height:300px; width:100%; background-repeat:no-repeat; background-size:100%;">
-    <h1 class="text-light text-opacity-75" style="text-align:center; font-size:60px;justify-content:center">Member List</h1>
+<div style="background:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXH1axTbWGSjfPrzLTTptcZsS55wImWfgoqw&usqp=CAU');
+        height:200px; width:100%; background-repeat:no-repeat; background-size:100%;" class="d-inline-flex justify-content-center"> 
+    <h1 class="text-light text-opacity-75 align-self-center" style="text-align:center; font-size:50px;justify-content:center">Member List</h1>
 </div>
 
 
 @using (Html.BeginForm("MemberIndex", "Member", FormMethod.Post, new { @class = "navbar-form navbar-right" }))
 {
-    <div class="row pt-4 pb-3">
-        <div class="form-group col-6 flex-fill">
-            <input type="text" name="strSearch" placeholder="Search for User Name" />
-            <button type="submit" class="btn btn-dark">
-                <i class="bi bi-search"></i> Search
-            </button>
-        </div>
-        <btn class="col-6 text-end">
+    <div class="row pt-4 pb-3"> 
+        <btn>
             <a asp-controller="Member" asp-action="Create" class="btn btn-dark">
                 <i class="bi bi-person-plus"></i> Create New
             </a>

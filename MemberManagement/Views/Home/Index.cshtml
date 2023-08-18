@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MemberManagement.Data.Studio>
+﻿@model IEnumerable<StudioManagement.Data.Studio>
 @{
     Pager pager = new Pager();
     int pageNo = 0;
@@ -12,18 +12,24 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div style="background:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXH1axTbWGSjfPrzLTTptcZsS55wImWfgoqw&usqp=CAU'); 
+        height:200px; width:100%; background-repeat:no-repeat; background-size:100%;" class="d-inline-flex">
+    <img style="height:200px; width:200px;" src="https://img.freepik.com/premium-vector/fitness-center-logo_25327-170.jpg?w=2000" />
+    <h1 class="text-light text-opacity-75 justify-content-center align-self-center" style="text-align:center; font-size:60px;justify-content:center">Welcome to GymXanhPT</h1>
+</div>
+
 @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = "navbar-form navbar-right" }))
 {
     <div class="row pt-4 pb-3">
         <div class="form-group col-6 flex-fill">
-            <input type="text" name="strSearch" placeholder="Search for Studio Name" />
+            @*<input type="text" name="strSearch" placeholder="Search for Studio Name" />
             <button type="submit" class="btn btn-dark">
                 <i class="bi bi-search"></i> Search
-            </button>
+            </button>*@
         </div>
         <btn class="col-6 text-end">
             <a asp-controller="Home" asp-action="Create" class="btn btn-dark">
-                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-plus-circle"></i> New Studio
             </a>
         </btn>
     </div>

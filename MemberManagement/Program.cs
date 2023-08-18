@@ -1,9 +1,11 @@
 using MySql.Data.MySqlClient;
 using System;
 using Microsoft.Extensions.Hosting;
-using MemberManagement.Data;
+using StudioManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
+using StudioManagement.Repository.IRepository;
+using StudioManagement.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,8 @@ builder.Services.AddDbContext<MyDbContext>(
     options => options.UseMySQL(builder.Configuration.GetConnectionString("Default")/*"server=127.0.0.1;user=root;database=gymxanhpt;password=Tma@2022@T1P;port=3306"*/));
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<MyDbContext>();
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
