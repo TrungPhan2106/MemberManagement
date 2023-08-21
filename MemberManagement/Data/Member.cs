@@ -18,7 +18,7 @@ namespace StudioManagement.Data
         [DisplayName("UUID")]
         public string MemberUUId { get; set; } = string.Empty;
         [MaxLength(45)]
-        [DisplayName("User Name")]
+        [DisplayName("User")]
         public string UserName { get; set; }
         [MaxLength(45)]
         [DisplayName("Full Name")]
@@ -42,8 +42,10 @@ namespace StudioManagement.Data
         public bool IsDeleted { get; set; }
         [DisplayName("Avatar")]
         public string? ImageUrl { get; set; }
-        [ForeignKey("StudioID")]
-       // [ValidateNever]
+        [DisplayName("Studio")]
         public int StudioID { get; set; }
+        [ForeignKey("StudioID")]
+        [ValidateNever]
+        public Studio Studio { get; set; }
     }
 }

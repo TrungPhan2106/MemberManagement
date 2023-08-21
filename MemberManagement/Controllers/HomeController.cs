@@ -67,7 +67,7 @@ namespace StudioManagement.Controllers
                 if (file != null)
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string studioPath = Path.Combine(wwwRootPath, @"images/studio");
+                    string studioPath = Path.Combine(wwwRootPath, @"images\studio");
 
                     using (var fileStream = new FileStream(Path.Combine(studioPath, fileName), FileMode.Create))
                     {
@@ -107,7 +107,7 @@ namespace StudioManagement.Controllers
                 if (file != null)
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string studioPath = Path.Combine(wwwRootPath, @"images/studio");
+                    string studioPath = Path.Combine(wwwRootPath, @"images\studio");
 
                     if (!string.IsNullOrEmpty(stu.StudioPic))
                     {

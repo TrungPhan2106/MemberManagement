@@ -7,6 +7,8 @@ using System.Diagnostics;
 using StudioManagement.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using StudioManagement.Repository.IRepository;
+using System.Drawing;
 
 namespace StudioManagement.Controllers
 {
@@ -15,18 +17,18 @@ namespace StudioManagement.Controllers
         
         private readonly ILogger<MemberController> _logger;
         private readonly IMapper _mapper;
-        private readonly MyDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public MemberController(IMapper mapper,ILogger<MemberController> logger, MyDbContext db, IWebHostEnvironment webHostEnvironment)
+        public MemberController(IMapper mapper,ILogger<MemberController> logger, IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
-            _db = db;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult MemberIndex(string strSearch, int pg=1)
         {
-            List<Member> objMemberList = _db.Member.ToList();
+            List<Member> objMemberList = _unitOfWork.Member.GetAll(includeProperties:"Studio").OrderBy(x => x.MemberId).ToList();
             if (!string.IsNullOrEmpty(strSearch))
             {
                 objMemberList = objMemberList.Where(x => x.UserName.Contains(strSearch)).ToList();
@@ -37,13 +39,15 @@ namespace StudioManagement.Controllers
             var paper = new Pager(recsCount, pg, pageSize);
             int recSkip = (pg -1) * pageSize;
             var data = objMemberList.Skip(recSkip).Take(paper.PageSize).ToList();
+
             this.ViewBag.Pager = paper;
             return View(data);
         }
     
         public IActionResult Create()
         {
-            IEnumerable<SelectListItem> StudioList = _db.Studio.Select(u => new SelectListItem
+            IEnumerable<SelectListItem> StudioList = _unitOfWork.Studio
+                .GetAll().Select(u => new SelectListItem
             {
                 Text = u.StudioName,
                 Value = u.StudioID.ToString()
@@ -61,7 +65,7 @@ namespace StudioManagement.Controllers
                 if(file != null)
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string memberPath = Path.Combine(wwwRootPath, @"images/member");
+                    string memberPath = Path.Combine(wwwRootPath, @"images\member");
 
                     using (var fileStream = new FileStream(Path.Combine(memberPath, fileName), FileMode.Create))
                     {
@@ -71,14 +75,15 @@ namespace StudioManagement.Controllers
                 }
 
                 member.MemberUUId = Guid.NewGuid().ToString();
-                _db.Member.Add(member);
-                _db.SaveChanges();
+                _unitOfWork.Member.Add(member);
+                _unitOfWork.Save();
                 TempData["success"] = "Member updated successfully";
                 return RedirectToAction("MemberIndex");
             }
             else
             {
-                IEnumerable<SelectListItem> StudioList = _db.Studio.Select(u => new SelectListItem
+                IEnumerable<SelectListItem> StudioList = _unitOfWork.Studio
+                    .GetAll().Select(u => new SelectListItem
                 {
                     Text = u.StudioName,
                     Value = u.StudioID.ToString()
@@ -94,12 +99,13 @@ namespace StudioManagement.Controllers
             {
                 return NotFound();
             }
-            Member? memberFromDb = _db.Member.Find(MemberId);
+            Member? memberFromDb = _unitOfWork.Member.Get(u => u.MemberId == MemberId, includeProperties: "Studio");
             if (memberFromDb == null)
             {
                 return NotFound();
             }
-            IEnumerable<SelectListItem> StudioList = _db.Studio.Select(u => new SelectListItem
+            IEnumerable<SelectListItem> StudioList = _unitOfWork.Studio
+                .GetAll().Select(u => new SelectListItem
             {
                 Text = u.StudioName,
                 Value = u.StudioID.ToString()
@@ -116,7 +122,7 @@ namespace StudioManagement.Controllers
                 if (file != null)
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string memberPath = Path.Combine(wwwRootPath, @"images/member");
+                    string memberPath = Path.Combine(wwwRootPath, @"images\member");
 
                     if(!string.IsNullOrEmpty(member.ImageUrl)) 
                     { 
@@ -139,14 +145,15 @@ namespace StudioManagement.Controllers
                 }
 
                 member.UpdatedDate = DateTime.Now;
-                _db.Member.Update(member);
-                _db.SaveChanges();
+                _unitOfWork.Member.Update(member);
+                _unitOfWork.Save();
                 TempData["success"] = "Member updated successfully";
                 return RedirectToAction("MemberIndex");
             }
             else
             {
-                IEnumerable<SelectListItem> StudioList = _db.Studio.Select(u => new SelectListItem
+                IEnumerable<SelectListItem> StudioList = _unitOfWork.Studio
+                    .GetAll().Select(u => new SelectListItem
                 {
                     Text = u.StudioName,
                     Value = u.StudioID.ToString()
@@ -161,7 +168,7 @@ namespace StudioManagement.Controllers
             {
                 return NotFound();
             }
-            Member? memberFromDb = _db.Member.Find(MemberId);
+            Member? memberFromDb = _unitOfWork.Member.Get(u => u.MemberId == MemberId, includeProperties: "Studio");
             if (memberFromDb == null)
             {
                 return NotFound();
@@ -171,7 +178,7 @@ namespace StudioManagement.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePOST(int? MemberId)
         {
-            Member? obj = _db.Member.Find(MemberId);
+            Member? obj = _unitOfWork.Member.Get(u => u.MemberId == MemberId);
             if(obj == null)
             {
                 return NotFound();
@@ -183,8 +190,8 @@ namespace StudioManagement.Controllers
                 System.IO.File.Delete(oldImagePath);
             }
 
-            _db.Member.Remove(obj);
-            _db.SaveChanges();
+            _unitOfWork.Member.Remove(obj);
+            _unitOfWork.Save();
             TempData["success"] = "Member deleted successfully";
             return RedirectToAction("MemberIndex");
         }
@@ -195,13 +202,13 @@ namespace StudioManagement.Controllers
             {
                 return NotFound();
             }
-            Member? memberFromDb = _db.Member.Find(MemberId);
+            Member? memberFromDb = _unitOfWork.Member.Get(u => u.MemberId == MemberId, includeProperties: "Studio");
             if (memberFromDb == null)
             {
                 return NotFound();
             }
             return View(memberFromDb);
         }
-        
+
     }
 }

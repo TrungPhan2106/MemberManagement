@@ -9,21 +9,17 @@ using System.Threading.Tasks;
 
 namespace StudioManagement.Repository
 {
-    public class UnitOfWork : IUnitOfWork
+    public class MemberRepository : Repository<Member>, IMemberRepository
     {
         private MyDbContext _db;
-        public IStudioRepository Studio { get; private set; }
-        public IMemberRepository Member { get; private set; }
-        public UnitOfWork(MyDbContext db)
+        public MemberRepository(MyDbContext db) : base(db)
         {
             _db = db;
-            Studio = new StudioRepository(_db);
-            Member = new MemberRepository(_db);
         }
 
-        public void Save()
+        public void Update(Member obj)
         {
-            _db.SaveChanges();
+            _db.Member.Update(obj);
         }
     }
 }

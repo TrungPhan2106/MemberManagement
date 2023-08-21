@@ -7,12 +7,29 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace StudioManagement.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Studio",
+                columns: table => new
+                {
+                    StudioID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    StudioName = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
+                    StudioAddress = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
+                    StudioPhone = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
+                    StudioPic = table.Column<string>(type: "longtext", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Studio", x => x.StudioID);
+                })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -39,25 +56,19 @@ namespace StudioManagement.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Member", x => x.MemberId);
+                    table.ForeignKey(
+                        name: "FK_Member_Studio_StudioID",
+                        column: x => x.StudioID,
+                        principalTable: "Studio",
+                        principalColumn: "StudioID",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "Studio",
-                columns: table => new
-                {
-                    StudioID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    StudioName = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
-                    StudioAddress = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
-                    StudioPhone = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
-                    StudioPic = table.Column<string>(type: "longtext", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Studio", x => x.StudioID);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
+            migrationBuilder.CreateIndex(
+                name: "IX_Member_StudioID",
+                table: "Member",
+                column: "StudioID");
         }
 
         /// <inheritdoc />

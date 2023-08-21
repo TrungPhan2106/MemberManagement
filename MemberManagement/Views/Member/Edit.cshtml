@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div>
+<div class="card shadow border-0 mt-4">
     <div class="card-header bg-secondary bg-gradient py-3">
         <div class="row">
             <div class="col-12 text-center">
@@ -53,6 +53,11 @@
                     <label class="form-check-label p-0" asp-for="Gender"></label>
                     <input class="form-check-input" asp-for="Gender" />
                     (Y)Male / (N)Female
+                    @*@Html.RadioButtonFor(Model.Gender,"Male") <p>Male</p>
+                    @Html.RadioButtonFor(Model.Gender,"Female") <p>Female</p>*@
+                    @*
+                    <div class="d-flex"><input asp-for="Gender" type="radio" value="1" name="gender" /> Male</div>
+                    <div class="d-flex"><input asp-for="Gender" type="radio" value="0" name="gender" /> Female</div>*@
                 </div>
                 <div class="mb-3 row p-1">
                     <label asp-for="Address" class="p-0"></label>

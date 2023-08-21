@@ -16,135 +16,149 @@
     ViewData["Title"] = "Member";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div style="background:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXH1axTbWGSjfPrzLTTptcZsS55wImWfgoqw&usqp=CAU');
-        height:200px; width:100%; background-repeat:no-repeat; background-size:100%;" class="d-inline-flex justify-content-center"> 
-    <h1 class="text-light text-opacity-75 align-self-center" style="text-align:center; font-size:50px;justify-content:center">Member List</h1>
-</div>
-
-
-@using (Html.BeginForm("MemberIndex", "Member", FormMethod.Post, new { @class = "navbar-form navbar-right" }))
-{
-    <div class="row pt-4 pb-3"> 
-        <btn>
-            <a asp-controller="Member" asp-action="Create" class="btn btn-dark">
-                <i class="bi bi-person-plus"></i> Create New
-            </a>
-        </btn>
+<div class="card shadow border-0 mt-4">
+    <div class="card-header bg-secondary bg-gradient m-lg-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="text-white py-2">Member List</h1>
+            </div>
+        </div>
     </div>
-}
-
-
-<table class="table table-hover">
-    <thead>
-        <tr style="text-align:center">
-            <th>
-                @Html.DisplayNameFor(model => model.UserName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FullName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateOfBirth)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Gender)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.JoinedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PhoneNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StudioID)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UserName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FullName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DateOfBirth)
-                </td>
-                <td>
-                    @(item.Gender ? "Male" : "Female")
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.JoinedDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PhoneNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Address)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StudioID)
-                </td>
-                <td>
-                    <div class="w-50 btn-group" role="group">
-                        <a asp-controller="Member" asp-action="Edit" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex" >
-                            <i class="bi bi-pencil-square"></i>
-                        </a> 
-                        <a asp-controller="Member" asp-action="Get" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex">
-                            <i class="bi bi-info-circle-fill"></i>
-                        </a> 
-                        <a asp-controller="Member" asp-action="Delete" asp-route-MemberId="@item.MemberId" class="btn text-danger d-flex mx-2">
-                            <i class="bi bi-person-dash-fill"></i>
+   <div class="card-body p-4">
+       <div class="row">
+            @using (Html.BeginForm("MemberIndex", "Member", FormMethod.Post, new { @class = "navbar-form navbar-right" }))
+            {
+                <div class="col-6 mb-3">
+                    <btn>
+                        <a asp-controller="Member" asp-action="Create" class="btn btn-dark">
+                            <i class="bi bi-person-plus"></i> Create New
                         </a>
-                    </div>
-                    
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                    </btn>
+                </div>
+            }
 
-<div class="container">
-    @if(pager.TotalPages > 0)
-    {
-        <ul class="pagination justify-content-end">
-            @if(pager.CurrentPage > 1)
-            {
-                <li class="page-item">
-                    <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="1">First</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="@(pager.CurrentPage - 1)">Previous</a>
-                </li>
-            }
-            @for(var pge = pager.StartPage; pge <= pager.EndPage; pge++)
-            {
-                <li class="page-item @(pge == pager.CurrentPage ? "active" :"")">
-                    <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="@pge">@pge</a>
-                </li>
-            }
-            @if(pager.CurrentPage < pager.TotalPages)
-            {
-                <li class="page-item">
-                    <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="@(pager.CurrentPage + 1)">Next</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="@(pager.TotalPages)">Last</a>
-                </li>
-            }
-        </ul>
-    }
+            <table id="tblData" class="table table-hover table-bordered" style="width:100%">
+                <thead>
+                    <tr style="text-align:center">
+                        <th>
+                            @Html.DisplayNameFor(model => model.UserName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FullName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DateOfBirth)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Gender)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.JoinedDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.PhoneNumber)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Email)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Address)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.StudioID)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.FullName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DateOfBirth)
+                            </td>
+                            <td>
+                                @(item.Gender ? "Male" : "Female")
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.JoinedDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PhoneNumber)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Email)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Address)
+                            </td>
+                            <td>
+                                <div>
+                                    <a asp-controller="Home" asp-action="Get" asp-route-StudioID="@item.StudioID"  style="text-decoration:none; color:black">
+                                        @Html.DisplayFor(modelItem => item.Studio.StudioName)
+                                    </a>
+                                </div>
+                                
+                            </td>
+                            <td>
+                                <div class="w-50 btn-group" role="group">
+                                    <a asp-controller="Member" asp-action="Edit" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a asp-controller="Member" asp-action="Get" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex">
+                                        <i class="bi bi-info-circle-fill"></i>
+                                    </a>
+                                    <a asp-controller="Member" asp-action="Delete" asp-route-MemberId="@item.MemberId" class="btn text-danger d-flex mx-2">
+                                        <i class="bi bi-person-dash-fill"></i>
+                                    </a>
+                                </div>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="container">
+                @if (pager.TotalPages > 0)
+                {
+                    <ul class="pagination justify-content-end">
+                        @if (pager.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="1">First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="@(pager.CurrentPage - 1)">Previous</a>
+                            </li>
+                        }
+                        @for (var pge = pager.StartPage; pge <= pager.EndPage; pge++)
+                        {
+                            <li class="page-item @(pge == pager.CurrentPage ? "active" :"")">
+                                <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="@pge">@pge</a>
+                            </li>
+                        }
+                        @if (pager.CurrentPage < pager.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="@(pager.CurrentPage + 1)">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" asp-controller="Member" asp-action="MemberIndex" asp-route-pg="@(pager.TotalPages)">Last</a>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+       </div>
+   </div>
 </div>
+
+@section Scripts{
+    <script src="~/js/member.js"></script>
+}
