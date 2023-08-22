@@ -26,13 +26,18 @@ namespace StudioManagement.Controllers
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
         }
-        public IActionResult MemberIndex(string strSearch, int pg=1)
+        public IActionResult MemberIndex(string strSearch, int pg=1, int? StudioID=0)
         {
             List<Member> objMemberList = _unitOfWork.Member.GetAll(includeProperties:"Studio").OrderBy(x => x.MemberId).ToList();
             if (!string.IsNullOrEmpty(strSearch))
             {
                 objMemberList = objMemberList.Where(x => x.UserName.Contains(strSearch)).ToList();
             }
+            if (StudioID != 0)
+            {
+                objMemberList = objMemberList.Where(x => x.StudioID == StudioID).ToList();
+            }
+            
             const int pageSize = 9;
             if (pg < 1) pg = 1;
             int recsCount = objMemberList.Count();
@@ -73,7 +78,6 @@ namespace StudioManagement.Controllers
                     }
                     member.ImageUrl = @"\images\member\" + fileName;
                 }
-
                 member.MemberUUId = Guid.NewGuid().ToString();
                 _unitOfWork.Member.Add(member);
                 _unitOfWork.Save();

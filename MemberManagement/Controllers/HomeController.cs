@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using AutoMapper.Execution;
 using System.Diagnostics.Metrics;
 using StudioManagement.Repository.IRepository;
+using Member = StudioManagement.Data.Member;
 
 namespace StudioManagement.Controllers
 {
@@ -177,6 +178,7 @@ namespace StudioManagement.Controllers
                 return NotFound();
             }
             Studio? studioFromDb = _unitOfWork.Studio.Get(u => u.StudioID == StudioID);
+
             if (studioFromDb == null)
             {
                 return NotFound();

@@ -43,9 +43,26 @@
                     <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                 </div>
                 <div class="mb-3 row p-1">
-                    <label class="form-check-label p-0" asp-for="Gender"></label>
+                    @*<label class="form-check-label p-0" asp-for="Gender"></label>
                     <input class="form-check-input" asp-for="Gender" />
-                    (Y)Male / (N)Female
+                    (Y)Male / (N)Female*@
+                    <fieldset class="input-group">
+                        <div class="row">
+                            <label class="form-check-label p-0" asp-for="Gender"></label>
+                            <div class="col-sm-10">
+                                <div class="mt-2">
+                                    <div class="form-check form-check-inline">
+                                        <input asp-for="Gender" class="form-check-input" type="radio" value="true" />
+                                        <label class="form-check-label" asp-for="Gender">Male</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input asp-for="Gender" class="form-check-input" type="radio" value="false" />
+                                        <label class="form-check-label" asp-for="Gender">Female</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
                 </div>
                 <div class="mb-3 row p-1">
                     <label asp-for="Address" class="p-0"></label>

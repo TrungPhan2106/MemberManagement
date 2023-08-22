@@ -22,6 +22,7 @@
             <div class="col-12 text-center">
                 <h1 class="text-white py-2">Member List</h1>
             </div>
+            
         </div>
     </div>
    <div class="card-body p-4">
@@ -104,7 +105,6 @@
                                         @Html.DisplayFor(modelItem => item.Studio.StudioName)
                                     </a>
                                 </div>
-                                
                             </td>
                             <td>
                                 <div class="w-50 btn-group" role="group">
@@ -118,13 +118,12 @@
                                         <i class="bi bi-person-dash-fill"></i>
                                     </a>
                                 </div>
-
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
-            <div class="container">
+            <div class="container cont">
                 @if (pager.TotalPages > 0)
                 {
                     <ul class="pagination justify-content-end">
@@ -154,6 +153,10 @@
                         }
                     </ul>
                 }
+                <a onclick="history.back()" class="btn btn-primary mx-2">
+                    <i class="bi bi-backspace" style="margin: 5px"></i>Go Back
+                </a>
+                <a asp-action="MemberIndex">Back to List</a>
             </div>
        </div>
    </div>
