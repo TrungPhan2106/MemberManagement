@@ -71,8 +71,21 @@
             </div>
         </div>
         <div class="mb-3">
-            <a asp-action="Edit" asp-route-MemberId="@Model?.MemberId" class="btn btn-primary mx-2">Edit</a> |
-            <a asp-action="MemberIndex">Back to List</a>
+            <a asp-action="Edit" asp-route-MemberId="@Model?.MemberId" class="btn btn-primary mx-2">Edit</a>
+            <a asp-action="MemberIndex" class="btn btn-primary mx-2">Back to List</a>
+            <a asp-controller="Member" asp-action="ExportToPDF" asp-route-MemberId="@Model?.MemberId" class="btn btn-primary mx-2">
+                Convert PDF
+            </a>
+            @*@{
+                Html.BeginForm("ExportToPDF", "Member", FormMethod.Post);
+                {
+                    <div>
+                        <input  type="submit" value="Convert PDF" style="width:150px;height:27px" />
+                    </div>
+                    
+                }
+                Html.EndForm();
+            }*@
         </div>
     </div>
 </div>

@@ -9,6 +9,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using StudioManagement.Repository.IRepository;
 using System.Drawing;
+using System.Data;
+using ClosedXML.Excel;
+using Syncfusion.Pdf;
+using Syncfusion.HtmlConverter;
+
 
 namespace StudioManagement.Controllers
 {
@@ -19,12 +24,14 @@ namespace StudioManagement.Controllers
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public MemberController(IMapper mapper,ILogger<MemberController> logger, IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        private readonly MyDbContext _db;
+        public MemberController(IMapper mapper,ILogger<MemberController> logger, IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment, MyDbContext db)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
+            _db = db;
         }
         public IActionResult MemberIndex(string strSearch, int pg=1, int? StudioID=0)
         {
@@ -48,7 +55,50 @@ namespace StudioManagement.Controllers
             this.ViewBag.Pager = paper;
             return View(data);
         }
-    
+        [HttpGet]
+        public async Task<FileResult> ExportMembersInExcel()
+        {
+            var objMemberList = await _db.Member.ToListAsync();
+            var fileName = "members.xlsx";
+            return GenerateExcel(fileName, objMemberList);
+        }
+
+        private FileResult GenerateExcel(string fileName, IEnumerable<Member> objMemberList)
+        {
+            DataTable dataTable = new DataTable("objMemberList");
+            dataTable.Columns.AddRange(new DataColumn[]
+            {
+                new DataColumn("MemberId"),
+                new DataColumn("UserName"),
+                new DataColumn("FullName"),
+                new DataColumn("DateOfBirth"),
+                new DataColumn("Gender"),
+                new DataColumn("PhoneNumber"),
+                new DataColumn("Email"),
+                new DataColumn("Address"),
+                new DataColumn("JoinedDate"),
+                new DataColumn("StudioID")
+            });
+
+            foreach (var member in objMemberList)
+            {
+                dataTable.Rows.Add(member.MemberId, member.UserName, member.FullName,
+                    member.DateOfBirth.ToString("MM/dd/yyyy"), member.Gender ? "Male" : "Female", member.PhoneNumber, member.Email,
+                    member.Address, member.JoinedDate.ToString("MM/dd/yyyy"), member.StudioID);
+            }
+
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                wb.Worksheets.Add(dataTable);
+                using(MemoryStream stream = new MemoryStream())
+                {
+                    wb.SaveAs(stream);
+                    return File(stream.ToArray(),
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+                }
+            }
+        }
+        
         public IActionResult Create()
         {
             IEnumerable<SelectListItem> StudioList = _unitOfWork.Studio
@@ -213,6 +263,23 @@ namespace StudioManagement.Controllers
             }
             return View(memberFromDb);
         }
-
+        [HttpGet]
+        public ActionResult ExportToPDF(int MemberId)
+        {
+            //Initialize HTML to PDF converter.
+            HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
+            BlinkConverterSettings blinkConverterSettings = new BlinkConverterSettings();
+            ////Set Blink viewport size.
+            blinkConverterSettings.ViewPortSize = new Syncfusion.Drawing.Size(800, 0);
+            //Assign Blink converter settings to HTML converter.
+            htmlConverter.ConverterSettings = blinkConverterSettings;
+            //Convert URL to PDF document.
+            PdfDocument document = htmlConverter.Convert($"https://localhost:7056/Member/Get?MemberId={MemberId}");
+            //Create memory stream.
+            MemoryStream stream = new MemoryStream();
+            //Save the document to memory stream.
+            document.Save(stream);
+            return File(stream.ToArray(), System.Net.Mime.MediaTypeNames.Application.Pdf, "HTML-to-PDF.pdf");
+        }    
     }
 }

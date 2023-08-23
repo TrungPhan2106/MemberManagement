@@ -65,57 +65,15 @@ namespace StudioManagement.Migrations
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "StudioMember",
-                columns: table => new
-                {
-                    RegisterId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    StudioID = table.Column<int>(type: "int", nullable: false),
-                    MemberId = table.Column<int>(type: "int", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StudioMember", x => x.RegisterId);
-                    table.ForeignKey(
-                        name: "FK_StudioMember_Member_MemberId",
-                        column: x => x.MemberId,
-                        principalTable: "Member",
-                        principalColumn: "MemberId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_StudioMember_Studio_StudioID",
-                        column: x => x.StudioID,
-                        principalTable: "Studio",
-                        principalColumn: "StudioID",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
             migrationBuilder.CreateIndex(
                 name: "IX_Member_StudioID",
                 table: "Member",
-                column: "StudioID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StudioMember_MemberId",
-                table: "StudioMember",
-                column: "MemberId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StudioMember_StudioID",
-                table: "StudioMember",
                 column: "StudioID");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "StudioMember");
-
             migrationBuilder.DropTable(
                 name: "Member");
 

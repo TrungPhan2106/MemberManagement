@@ -18,7 +18,6 @@ namespace StudioManagement.Data
         }
         public DbSet<Member> Member { get; set; }
         public DbSet<Studio> Studio { get; set; }
-        public DbSet<StudioRegister> StudioRegister { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

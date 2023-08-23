@@ -11,7 +11,7 @@ using StudioManagement.Data;
 namespace StudioManagement.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20230822072454_initial")]
+    [Migration("20230823020023_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -118,33 +118,6 @@ namespace StudioManagement.Migrations
                     b.ToTable("Studio");
                 });
 
-            modelBuilder.Entity("StudioManagement.Data.StudioRegister", b =>
-                {
-                    b.Property<int>("RegisterId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("MemberId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StudioID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("RegisterId");
-
-                    b.HasIndex("MemberId");
-
-                    b.HasIndex("StudioID");
-
-                    b.ToTable("StudioMember");
-                });
-
             modelBuilder.Entity("StudioManagement.Data.Member", b =>
                 {
                     b.HasOne("StudioManagement.Data.Studio", "Studio")
@@ -152,25 +125,6 @@ namespace StudioManagement.Migrations
                         .HasForeignKey("StudioID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Studio");
-                });
-
-            modelBuilder.Entity("StudioManagement.Data.StudioRegister", b =>
-                {
-                    b.HasOne("StudioManagement.Data.Member", "Member")
-                        .WithMany()
-                        .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("StudioManagement.Data.Studio", "Studio")
-                        .WithMany()
-                        .HasForeignKey("StudioID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Member");
 
                     b.Navigation("Studio");
                 });

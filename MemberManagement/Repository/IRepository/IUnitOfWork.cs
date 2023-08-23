@@ -11,7 +11,6 @@ namespace StudioManagement.Repository.IRepository
     {
         IStudioRepository Studio { get; }
         IMemberRepository Member { get; }
-        IRegisterRepository Register { get; }
         void Save();
     }
 }

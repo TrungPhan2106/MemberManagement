@@ -14,13 +14,11 @@ namespace StudioManagement.Repository
         private MyDbContext _db;
         public IStudioRepository Studio { get; private set; }
         public IMemberRepository Member { get; private set; }
-        public IRegisterRepository Register { get; private set; }
         public UnitOfWork(MyDbContext db)
         {
             _db = db;
             Studio = new StudioRepository(_db);
             Member = new MemberRepository(_db);
-            Register = new RegisterRepository(_db);
         }
 
         public void Save()
