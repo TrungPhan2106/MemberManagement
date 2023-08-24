@@ -36,6 +36,15 @@ namespace StudioManagement.Controllers
         public IActionResult MemberIndex(string strSearch, int pg=1, int? StudioID=0)
         {
             List<Member> objMemberList = _unitOfWork.Member.GetAll(includeProperties:"Studio").OrderBy(x => x.MemberId).ToList();
+            //var expiredMembers = objMemberList.Where(x => x.ExpiredDate < DateTime.Now).ToList();
+            //if (expiredMembers.Any())
+            //{
+            //    foreach (var mem in expiredMembers)
+            //    {
+            //            mem.Status = "DeActive";
+            //    }
+            //    _unitOfWork.Save();
+            //}
             if (!string.IsNullOrEmpty(strSearch))
             {
                 objMemberList = objMemberList.Where(x => x.UserName.Contains(strSearch)).ToList();
@@ -55,10 +64,37 @@ namespace StudioManagement.Controllers
             this.ViewBag.Pager = paper;
             return View(data);
         }
+
+        //public static void ChangeStatus(IUnitOfWork unitOfWork, Member member)
+        //{
+        //    //Query your database context to retrieve current information 
+        //    //for Training class as a list
+        //    List<Member> expiredMembers = unitOfWork.Member.GetAll().ToList();
+
+        //    //Define TrainingStatus status
+        //    foreach (var expire in expiredMembers)
+        //    {
+        //        if (expire.ExpiredDate < DateTime.Now)
+        //            expire.Status = "DeActive";
+        //        else
+        //            expire.Status = "Active";
+        //    }
+        //    unitOfWork.Member.Update(member);
+        //    unitOfWork.Save();
+        //}
+
         [HttpGet]
-        public async Task<FileResult> ExportMembersInExcel()
+        public async Task<FileResult> ExportMembersInExcel(string strSearch, int? StudioID = 0)
         {
             var objMemberList = await _db.Member.ToListAsync();
+            if (!string.IsNullOrEmpty(strSearch))
+            {
+                objMemberList = objMemberList.Where(x => x.UserName.Contains(strSearch)).ToList();
+            }
+            if (StudioID != 0)
+            {
+                objMemberList = objMemberList.Where(x => x.StudioID == StudioID).ToList();
+            }
             var fileName = "members.xlsx";
             return GenerateExcel(fileName, objMemberList);
         }
@@ -180,7 +216,7 @@ namespace StudioManagement.Controllers
 
                     if(!string.IsNullOrEmpty(member.ImageUrl)) 
                     { 
-                        //delete ola image
+                        //delete old image
                         var oldImagePath = 
                             Path.Combine(wwwRootPath, member.ImageUrl.TrimStart('\\'));
 
@@ -189,7 +225,6 @@ namespace StudioManagement.Controllers
                             System.IO.File.Delete(oldImagePath);
                         }
                     }
-
                     using (var fileStream = new FileStream(Path.Combine(memberPath, fileName), FileMode.Create))
                     {
                         file.CopyTo(fileStream);
@@ -197,7 +232,10 @@ namespace StudioManagement.Controllers
 
                     member.ImageUrl = @"\images\member\" + fileName;
                 }
-
+                if (member.ExpiredDate < DateTime.Now)
+                { member.Status = "DeActive"; }
+                else
+                { member.Status = "Active"; }
                 member.UpdatedDate = DateTime.Now;
                 _unitOfWork.Member.Update(member);
                 _unitOfWork.Save();
@@ -263,6 +301,21 @@ namespace StudioManagement.Controllers
             }
             return View(memberFromDb);
         }
+
+        public ActionResult GetMem(int? MemberId)
+        {
+            if (MemberId == null || MemberId == 0)
+            {
+                return NotFound();
+            }
+            Member? memberFromDb = _unitOfWork.Member.Get(u => u.MemberId == MemberId, includeProperties: "Studio");
+            if (memberFromDb == null)
+            {
+                return NotFound();
+            }
+            return View(memberFromDb);
+        }
+
         [HttpGet]
         public ActionResult ExportToPDF(int MemberId)
         {
@@ -274,12 +327,12 @@ namespace StudioManagement.Controllers
             //Assign Blink converter settings to HTML converter.
             htmlConverter.ConverterSettings = blinkConverterSettings;
             //Convert URL to PDF document.
-            PdfDocument document = htmlConverter.Convert($"https://localhost:7056/Member/Get?MemberId={MemberId}");
+            PdfDocument document = htmlConverter.Convert($"https://localhost:7056/Member/GetMem?MemberId={MemberId}");
             //Create memory stream.
             MemoryStream stream = new MemoryStream();
             //Save the document to memory stream.
             document.Save(stream);
-            return File(stream.ToArray(), System.Net.Mime.MediaTypeNames.Application.Pdf, "HTML-to-PDF.pdf");
+            return File(stream.ToArray(), System.Net.Mime.MediaTypeNames.Application.Pdf, "MemberInfo.pdf");
         }    
     }
 }

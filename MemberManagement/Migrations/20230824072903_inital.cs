@@ -7,7 +7,7 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace StudioManagement.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class inital : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -47,6 +47,8 @@ namespace StudioManagement.Migrations
                     Gender = table.Column<ulong>(type: "bit", nullable: false),
                     Address = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     JoinedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ExpiredDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Status = table.Column<string>(type: "longtext", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     IsDeleted = table.Column<ulong>(type: "bit", nullable: false),

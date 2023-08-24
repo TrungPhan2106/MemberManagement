@@ -10,7 +10,8 @@ using Microsoft.AspNetCore.Hosting;
 using AutoMapper.Execution;
 using System.Diagnostics.Metrics;
 using StudioManagement.Repository.IRepository;
-using Member = StudioManagement.Data.Member;
+using Syncfusion.Pdf;
+using Syncfusion.HtmlConverter;
 
 namespace StudioManagement.Controllers
 {
@@ -184,6 +185,38 @@ namespace StudioManagement.Controllers
                 return NotFound();
             }
             return View(studioFromDb);
+        }
+        public ActionResult GetStudio(int? StudioID)
+        {
+            if (StudioID == null || StudioID == 0)
+            {
+                return NotFound();
+            }
+            Studio? studioFromDb = _unitOfWork.Studio.Get(u => u.StudioID == StudioID);
+
+            if (studioFromDb == null)
+            {
+                return NotFound();
+            }
+            return View(studioFromDb);
+        }
+        [HttpGet]
+        public ActionResult ExportToPDF(int StudioID)
+        {
+            //Initialize HTML to PDF converter.
+            HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
+            BlinkConverterSettings blinkConverterSettings = new BlinkConverterSettings();
+            ////Set Blink viewport size.
+            blinkConverterSettings.ViewPortSize = new Syncfusion.Drawing.Size(800, 0);
+            //Assign Blink converter settings to HTML converter.
+            htmlConverter.ConverterSettings = blinkConverterSettings;
+            //Convert URL to PDF document.
+            PdfDocument document = htmlConverter.Convert($"https://localhost:7056/Home/GetStudio?StudioID={StudioID}");
+            //Create memory stream.
+            MemoryStream stream = new MemoryStream();
+            //Save the document to memory stream.
+            document.Save(stream);
+            return File(stream.ToArray(), System.Net.Mime.MediaTypeNames.Application.Pdf, "StudioInfo.pdf");
         }
     }
 }

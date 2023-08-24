@@ -11,8 +11,8 @@ using StudioManagement.Data;
 namespace StudioManagement.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20230823020023_initial")]
-    partial class initial
+    [Migration("20230824072903_inital")]
+    partial class inital
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,6 +44,9 @@ namespace StudioManagement.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<DateTime>("ExpiredDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(45)
@@ -70,6 +73,10 @@ namespace StudioManagement.Migrations
                         .IsRequired()
                         .HasMaxLength(13)
                         .HasColumnType("varchar(13)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<int>("StudioID")
                         .HasColumnType("int");

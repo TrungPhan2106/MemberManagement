@@ -23,7 +23,7 @@
                 <input type="hidden" asp-for="CreatedDate" />
                 <input type="hidden" asp-for="UpdatedDate" />
                 <input type="hidden" asp-for="JoinedDate" />
-
+                <input type="hidden" asp-for="Status" />
                 <div class="mb-3 row p-1">
                     <label asp-for="UserName" class="p-0"></label>
                     <input asp-for="UserName" class="form-control" />
@@ -50,9 +50,6 @@
                     <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                 </div>
                 <div class="mb-3 row p-1">
-                    @*<label class="form-check-label p-0" asp-for="Gender"></label>
-                    <input class="form-check-input" asp-for="Gender" />
-                    (Y)Male / (N)Female*@
                     <fieldset class="input-group">
                         <div class="row">
                             <label class="form-check-label p-0" asp-for="Gender"></label>
@@ -75,6 +72,11 @@
                     <label asp-for="Address" class="p-0"></label>
                     <input asp-for="Address" class="form-control" />
                     <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+                <div class="mb-3 row p-1">
+                    <label asp-for="ExpiredDate" class="p-0"></label>
+                    <input asp-for="ExpiredDate" class="form-control" />
+                    <span asp-validation-for="ExpiredDate" class="text-danger"></span>
                 </div>
                 <div class="mb-3 row p-1">
                     <label asp-for="StudioID" class="p-0"></label>

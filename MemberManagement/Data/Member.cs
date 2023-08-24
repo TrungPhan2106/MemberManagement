@@ -37,6 +37,10 @@ namespace StudioManagement.Data
         [DisplayName("Joined Date")]
         [DataType(DataType.Date)]
         public DateTime JoinedDate { get; set; }
+        [DisplayName("Expired Date")]
+        [DataType(DataType.Date)]
+        public DateTime ExpiredDate { get; set; }
+        public string Status { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public DateTime UpdatedDate { get; set; } = DateTime.Now;
         public bool IsDeleted { get; set; }

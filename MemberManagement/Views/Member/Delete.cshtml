@@ -52,6 +52,10 @@
                     <input asp-for="JoinedDate" disabled class="form-control" />
                 </div>
                 <div class="mb-3 row p-1">
+                    <label asp-for="ExpiredDate" class="p-0"></label>
+                    <input asp-for="ExpiredDate" disabled class="form-control" />
+                </div>
+                <div class="mb-3 row p-1">
                     <label asp-for="StudioID" class="p-0"></label>
                     <input asp-for="Studio.StudioName" disabled class="form-control" />
                 </div>
@@ -74,6 +78,7 @@
         <form asp-action="Delete">
             <input type="hidden" asp-for="MemberId" />
             <input type="hidden" asp-for="MemberUUId" />
+            <input type="hidden" asp-for="Status" />
             <input type="hidden" asp-for="CreatedDate" />
             <input type="hidden" asp-for="UpdatedDate" />
             <input type="hidden" asp-for="IsDeleted" />
