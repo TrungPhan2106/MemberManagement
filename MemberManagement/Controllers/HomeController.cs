@@ -17,12 +17,15 @@ namespace StudioManagement.Controllers
 {
     public class HomeController : Controller
     {
+        private static readonly log4net.ILog log = log4net.LogManager
+            .GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private readonly ILogger<HomeController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
         public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
+            logger.LogWarning("This is a MEL warning on the privacy page");
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
         }
@@ -46,6 +49,7 @@ namespace StudioManagement.Controllers
 
         public IActionResult Privacy()
         {
+            log.Info("About page privacy.");
             return View();
         }
 

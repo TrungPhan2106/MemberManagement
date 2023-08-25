@@ -74,52 +74,104 @@
                 <tbody>
                     @foreach (var item in Model)
                     {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Status)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.UserName)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.FullName)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.DateOfBirth)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.PhoneNumber)
-                            </td>
-                            <td>
-                                @(item.Gender ? "Male" : "Female")
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.JoinedDate)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.ExpiredDate)
-                            </td>
-                            <td>
-                                <div>
-                                    <a asp-controller="Home" asp-action="Get" asp-route-StudioID="@item.StudioID"  style="text-decoration:none; color:black">
-                                        @Html.DisplayFor(modelItem => item.Studio.StudioName)
-                                    </a>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="w-50 btn-group" role="group">
-                                    <a asp-controller="Member" asp-action="Edit" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <a asp-controller="Member" asp-action="Get" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex">
-                                        <i class="bi bi-info-circle-fill"></i>
-                                    </a>
-                                    <a asp-controller="Member" asp-action="Delete" asp-route-MemberId="@item.MemberId" class="btn text-danger d-flex mx-2">
-                                        <i class="bi bi-person-dash-fill"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
+                        @if (item.Status == "DeActive")
+                        {
+                            <tr class="table-warning" style="border-block-color:red">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Status)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UserName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FullName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DateOfBirth)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                                </td>
+                                <td>
+                                    @(item.Gender ? "Male" : "Female")
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.JoinedDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ExpiredDate)
+                                </td>
+                                <td>
+                                    <div>
+                                        <a asp-controller="Home" asp-action="Get" asp-route-StudioID="@item.StudioID" style="text-decoration:none; color:black">
+                                            @Html.DisplayFor(modelItem => item.Studio.StudioName)
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="w-50 btn-group" role="group">
+                                        <a asp-controller="Member" asp-action="Edit" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a asp-controller="Member" asp-action="Get" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex">
+                                            <i class="bi bi-info-circle-fill"></i>
+                                        </a>
+                                        <a asp-controller="Member" asp-action="Delete" asp-route-MemberId="@item.MemberId" class="btn text-danger d-flex mx-2">
+                                            <i class="bi bi-person-dash-fill"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Status)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UserName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FullName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DateOfBirth)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                                </td>
+                                <td>
+                                    @(item.Gender ? "Male" : "Female")
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.JoinedDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ExpiredDate)
+                                </td>
+                                <td>
+                                    <div>
+                                        <a asp-controller="Home" asp-action="Get" asp-route-StudioID="@item.StudioID" style="text-decoration:none; color:black">
+                                            @Html.DisplayFor(modelItem => item.Studio.StudioName)
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="w-50 btn-group" role="group">
+                                        <a asp-controller="Member" asp-action="Edit" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a asp-controller="Member" asp-action="Get" asp-route-MemberId="@item.MemberId" class="btn mx-2 d-flex">
+                                            <i class="bi bi-info-circle-fill"></i>
+                                        </a>
+                                        <a asp-controller="Member" asp-action="Delete" asp-route-MemberId="@item.MemberId" class="btn text-danger d-flex mx-2">
+                                            <i class="bi bi-person-dash-fill"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>

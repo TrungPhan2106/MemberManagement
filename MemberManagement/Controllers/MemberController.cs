@@ -35,16 +35,18 @@ namespace StudioManagement.Controllers
         }
         public IActionResult MemberIndex(string strSearch, int pg=1, int? StudioID=0)
         {
-            List<Member> objMemberList = _unitOfWork.Member.GetAll(includeProperties:"Studio").OrderBy(x => x.MemberId).ToList();
-            //var expiredMembers = objMemberList.Where(x => x.ExpiredDate < DateTime.Now).ToList();
-            //if (expiredMembers.Any())
-            //{
-            //    foreach (var mem in expiredMembers)
-            //    {
-            //            mem.Status = "DeActive";
-            //    }
-            //    _unitOfWork.Save();
-            //}
+            List<Member> objMemberList = _unitOfWork.Member.GetAll(includeProperties:"Studio")
+                .OrderBy(x => x.MemberId).ToList();
+            
+            var expiredMembers = objMemberList.Where(x => x.ExpiredDate < DateTime.Now).ToList();
+            if (expiredMembers.Any())
+            {
+                foreach (var mem in expiredMembers)
+                {
+                    mem.Status = "DeActive";
+                }
+                _unitOfWork.Save();
+            }
             if (!string.IsNullOrEmpty(strSearch))
             {
                 objMemberList = objMemberList.Where(x => x.UserName.Contains(strSearch)).ToList();
@@ -64,24 +66,6 @@ namespace StudioManagement.Controllers
             this.ViewBag.Pager = paper;
             return View(data);
         }
-
-        //public static void ChangeStatus(IUnitOfWork unitOfWork, Member member)
-        //{
-        //    //Query your database context to retrieve current information 
-        //    //for Training class as a list
-        //    List<Member> expiredMembers = unitOfWork.Member.GetAll().ToList();
-
-        //    //Define TrainingStatus status
-        //    foreach (var expire in expiredMembers)
-        //    {
-        //        if (expire.ExpiredDate < DateTime.Now)
-        //            expire.Status = "DeActive";
-        //        else
-        //            expire.Status = "Active";
-        //    }
-        //    unitOfWork.Member.Update(member);
-        //    unitOfWork.Save();
-        //}
 
         [HttpGet]
         public async Task<FileResult> ExportMembersInExcel(string strSearch, int? StudioID = 0)
@@ -135,8 +119,12 @@ namespace StudioManagement.Controllers
             }
         }
         
-        public IActionResult Create()
+        public IActionResult Create(int? StudioID, Member member)
         {
+            if (StudioID != 0)
+            {
+                member.StudioID = (int)StudioID;
+            }
             IEnumerable<SelectListItem> StudioList = _unitOfWork.Studio
                 .GetAll().Select(u => new SelectListItem
             {

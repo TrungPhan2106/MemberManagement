@@ -3,12 +3,15 @@ using System;
 using Microsoft.Extensions.Hosting;
 using StudioManagement.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Log4Net.AspNetCore;
 using System.Configuration;
 using StudioManagement.Repository.IRepository;
 using StudioManagement.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.AddLog4Net();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAutoMapper(typeof(AutoMappingProflie).Assembly);
