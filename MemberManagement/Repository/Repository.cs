@@ -60,9 +60,9 @@ namespace StudioManagement.Repository
             dbSet.Remove(entity);
         }
 
-        public void RemoveRange(IEnumerable<T> entity)
-        {
-            dbSet.RemoveRange(entity);
-        }
+        //public void RemoveRange(IEnumerable<T> entity)
+        //{
+        //    dbSet.RemoveRange(entity);
+        //}
     }
 }

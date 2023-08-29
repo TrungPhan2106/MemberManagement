@@ -54,8 +54,7 @@ namespace StudioManagement.Controllers
             if (StudioID != 0)
             {
                 objMemberList = objMemberList.Where(x => x.StudioID == StudioID).ToList();
-            }
-            
+            }            
             const int pageSize = 9;
             if (pg < 1) pg = 1;
             int recsCount = objMemberList.Count();
@@ -133,7 +132,7 @@ namespace StudioManagement.Controllers
             });
             ViewBag.StudioList = StudioList;
             return View();
-        }
+        }   
         
         [HttpPost]
         public IActionResult Create(Member member, IFormFile? file)
