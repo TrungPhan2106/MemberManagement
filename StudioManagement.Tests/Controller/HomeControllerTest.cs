@@ -24,24 +24,53 @@ using AutoMapper;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Microsoft.Extensions.Hosting;
+using Syncfusion.HtmlConverter;
+using Syncfusion.Pdf;
+using System.Diagnostics;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 
 namespace StudioManagement.Tests.Controller
 {
     public class HomeControllerTest
     {
         private HomeController _studioController;
+        private static log4net.ILog log = log4net.LogManager
+           .GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private ILogger<HomeController> _logger;
         private IUnitOfWork _unitOfWork;
         private IWebHostEnvironment _webHostEnvironment;
 
-        public HomeControllerTest(/*ILogger<HomeController> logger, IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment*/)
+        public HomeControllerTest()
         {
             _logger = A.Fake< ILogger<HomeController>>();
             _unitOfWork = A.Fake<IUnitOfWork>();
             _webHostEnvironment = A.Fake<IWebHostEnvironment>();
+            _logger.LogWarning("This is a MEL warning on the privacy page");
 
             _studioController = new HomeController(_logger, _unitOfWork, _webHostEnvironment);
         }
+
+        [Fact]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public void Error_Test()
+        {
+            ErrorViewModel error = new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id
+            };
+            var result = _studioController.Error() as ViewResult;
+            var err = result?.ViewData.Model as ErrorViewModel;
+            Assert.NotNull(err);
+        }
+
+        [Fact]
+        public IActionResult Privacy_Test()
+        {
+            log.Info("About page privacy.");
+            return _studioController.Privacy();
+        }
+
         [Fact]
         public List<Studio> Test_Index_ReturnSuccess()
         {
@@ -54,10 +83,6 @@ namespace StudioManagement.Tests.Controller
             int recSkip = (pg - 1) * 8;
             var data = studioList.Skip(recSkip).Take(paper.PageSize).ToList();
             return (data);
-            //var controller = new HomeController( _logger,  _unitOfWork,  _webHostEnvironment);
-            //var result = _studioController.Index(strSearch, pg) /*as ViewResult*/;
-            //Assert.Equal("Index", result?.ViewName);
-            //result.Should().BeOfType<IActionResult>();
 
         }
         [Fact]
@@ -96,6 +121,16 @@ namespace StudioManagement.Tests.Controller
         }
 
         [Fact]
+        public Studio Test_GetStudio_ReturnSuccess()
+        {
+            int StudioID = 1;
+            var studioFromDb = new Studio();
+            _unitOfWork.Studio.Get(u => u.StudioID == StudioID);
+            var result = _studioController.GetStudio(StudioID);
+            return (studioFromDb);
+        }
+
+        [Fact]
         public IActionResult Create_ViewState_Is_Valid_Returns_RedirectToRouteResult()
         {
             Studio studio = new Studio()
@@ -107,26 +142,6 @@ namespace StudioManagement.Tests.Controller
             };
             var actual = _studioController.Create();
             return actual;
-        }
-
-        [Fact]
-        public IActionResult CreateEquipment_ModelIsValid_ReturnCreated()
-        {
-            var studio = new Studio();
-            string wwwRootPath = _webHostEnvironment.WebRootPath;
-            string filePath = Path.Combine(wwwRootPath, @"images\studio");
-            string fileName = Guid.NewGuid().ToString();
-            string contentType = "application/octet-stream";
-            var stream = new FileStream(filePath, FileMode.Open);
-            IFormFile? file= new FormFile(stream, 0, stream.Length, null, fileName)
-            {
-                Headers = new HeaderDictionary(),
-                ContentType = contentType
-            };
-            _unitOfWork.Studio.Add(studio);
-            _unitOfWork.Save();
-            var result = _studioController.Create(studio, file);
-            return result;
         }
 
         [Fact]
@@ -157,6 +172,96 @@ namespace StudioManagement.Tests.Controller
             };
             var actual = _studioController.Edit(StudioID);
             return actual;
+        }
+
+
+
+        [Fact]
+        public IActionResult CreateStudio_ModelIsValid_ReturnCreated()
+        {
+            var studio = new Studio();
+            var file = new Mock<IFormFile>();
+            var sourceImg = Path.GetFullPath(@"source image path");
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(sourceImg);
+            writer.Flush();
+            stream.Position = 0;
+            var fileName = "text.jfif";
+            file.Setup(f => f.FileName).Returns(fileName).Verifiable();
+            file.Setup(_ => _.CopyToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+        .Returns((Stream stream, CancellationToken token) => stream.CopyToAsync(stream))
+        .Verifiable();
+
+            var controller = new HomeController(_logger, _unitOfWork, _webHostEnvironment);
+            var inputFile = file.Object;
+            _unitOfWork.Studio.Add(studio);
+            _unitOfWork.Save();
+            var result = _studioController.Create(studio, inputFile);
+            return result;
+        }
+
+        [Fact]
+        public ActionResult ExportToPDF_test()
+        {
+            int StudioID = 1;
+            var htmlConverter = new HtmlToPdfConverter();
+            var blinkConverterSettings = new BlinkConverterSettings();
+            blinkConverterSettings.ViewPortSize = new Syncfusion.Drawing.Size(800, 0);
+            htmlConverter.ConverterSettings = blinkConverterSettings;
+            var document = new PdfDocument();
+            document = htmlConverter.Convert($"https://localhost:7056/Home/GetStudio?StudioID={StudioID}");
+            var stream = new MemoryStream();
+            document.Save(stream);
+            var result = _studioController.ExportToPDF(StudioID);
+            return result;
+        }
+
+        [Fact]
+        public IActionResult EditStudio_ModelIsValid_ReturnCreated()
+        {
+            var studio = new Studio();
+            var file = new Mock<IFormFile>();
+            var sourceImg = Path.GetFullPath(@"source image path");
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(sourceImg);
+            writer.Flush();
+            stream.Position = 0;
+            var fileName = "text.jfif";
+            file.Setup(f => f.FileName).Returns(fileName).Verifiable();
+            file.Setup(_ => _.CopyToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+        .Returns((Stream stream, CancellationToken token) => stream.CopyToAsync(stream))
+        .Verifiable();
+
+            var controller = new HomeController(_logger, _unitOfWork, _webHostEnvironment);
+            var inputFile = file.Object;
+            _unitOfWork.Studio.Update(studio);
+            _unitOfWork.Save();
+            var result = _studioController.Edit(studio, inputFile);
+            return result;
+        }
+
+        [Fact]
+        public IActionResult DeleteStudio_ModelIsValid_ReturnCreated()
+        {
+            var StudioID = 1;
+            var studio = new Studio()
+            {
+                StudioID = StudioID,
+                StudioName = "Studio 1",
+                StudioAddress = "TP.HCM",
+                StudioPhone = "000000000",
+                StudioPic = "https://www.eatthis.com/wp-content/uploads/sites/4/2023/08/quinoa-bowl.jpg?quality=82&strip=1&w=640"
+            };
+
+            //var controller = new HomeController(_logger, _unitOfWork, _webHostEnvironment);
+            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, studio.StudioPic.TrimStart('\\'));
+            oldImagePath.Remove(oldImagePath.Length - 1);
+            _unitOfWork.Studio.Remove(studio);
+            _unitOfWork.Save();
+            var result = _studioController.DeletePOST(StudioID);
+            return result;
         }
     }
 }

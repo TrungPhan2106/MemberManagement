@@ -16,6 +16,11 @@ using Moq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Http;
 using FluentAssertions;
+using Syncfusion.HtmlConverter;
+using Syncfusion.Pdf;
+using Microsoft.EntityFrameworkCore;
+using ClosedXML.Excel;
+using System.Data;
 
 namespace StudioManagement.Tests.Controller
 {
@@ -51,7 +56,7 @@ namespace StudioManagement.Tests.Controller
             var data = objMemberList.Skip(recSkip).Take(paper.PageSize).ToList();
             return (objMemberList);
         }
-
+        
         [Fact]
         public void Test_Index_ReturnViewData()
         {
@@ -203,6 +208,155 @@ namespace StudioManagement.Tests.Controller
             {
                 //Assert
                 Assert.False(false, ex.Message);
+            }
+        }
+
+        [Fact]
+        public IActionResult CreateMember_ModelIsValid_ReturnCreated()
+        {
+            var member = new Member();
+            var file = new Mock<IFormFile>();
+            var sourceImg = Path.GetFullPath(@"source image path");
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(sourceImg);
+            writer.Flush();
+            stream.Position = 0;
+            var fileName = "text.jfif";
+            file.Setup(f => f.FileName).Returns(fileName).Verifiable();
+            file.Setup(_ => _.CopyToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+        .Returns((Stream stream, CancellationToken token) => stream.CopyToAsync(stream))
+        .Verifiable();
+
+            var controller = new MemberController(_mapper, _logger, _unitOfWork, _webHostEnvironment, _db);
+            var inputFile = file.Object;
+            _unitOfWork.Member.Add(member);
+            _unitOfWork.Save();
+            var result = _memberController.Create(member, inputFile);
+            return result;
+        }
+
+        [Fact]
+        public IActionResult EditMember_ModelIsValid_ReturnCreated()
+        {
+            var member = new Member();
+            var file = new Mock<IFormFile>();
+            var sourceImg = Path.GetFullPath(@"source image path");
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(sourceImg);
+            writer.Flush();
+            stream.Position = 0;
+            var fileName = "text.jfif";
+            file.Setup(f => f.FileName).Returns(fileName).Verifiable();
+            file.Setup(_ => _.CopyToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+        .Returns((Stream stream, CancellationToken token) => stream.CopyToAsync(stream))
+        .Verifiable();
+
+            var controller = new MemberController(_mapper, _logger, _unitOfWork, _webHostEnvironment, _db);
+            var inputFile = file.Object;
+            _unitOfWork.Member.Update(member);
+            _unitOfWork.Save();
+            var result = _memberController.Edit(member, inputFile);
+            return result;
+        }
+
+        [Fact]
+        public IActionResult DeleteMember_ModelIsValid_ReturnCreated()
+        {
+            var MemberId = 1;
+            var member = new Member()
+            {
+                MemberId = 1,
+                UserName = "UserName",
+                FullName = "FullName",
+                Email = "Email",
+                DateOfBirth = DateTime.Now,
+                Gender = true,
+                JoinedDate = DateTime.Now,
+                PhoneNumber = "00000000",
+                ImageUrl = "23db3c9f-c9e2-454d-8b48-073d30d8e8b1.jfif"
+            };
+            string? imageUrl = member.ImageUrl;
+            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, imageUrl.TrimStart('\\'));
+            oldImagePath.Remove(oldImagePath.Length - 1);
+            //var controller = new MemberController(_mapper, _logger, _unitOfWork, _webHostEnvironment, _db);
+            _unitOfWork.Member.Remove(member);
+            _unitOfWork.Save();
+            var result = _memberController.DeletePOST(MemberId);
+            return result;
+        }
+
+        [Fact]
+        public ActionResult ExportToPDF_test()
+        {
+            int MemberId = 1;
+            var htmlConverter = new HtmlToPdfConverter();
+            var blinkConverterSettings = new BlinkConverterSettings();
+            blinkConverterSettings.ViewPortSize = new Syncfusion.Drawing.Size(800, 0);
+            htmlConverter.ConverterSettings = blinkConverterSettings;
+            var document = new PdfDocument();
+            document = htmlConverter.Convert($"https://localhost:7056/Home/GetStudio?StudioID={MemberId}");
+            var stream = new MemoryStream();
+            document.Save(stream);
+            var result = _memberController.ExportToPDF(MemberId);
+            return result;
+        }
+
+        [Fact]
+        public Task<FileResult> ExportMembersInExcel_AllNull_Test()
+        {
+            var objMemberList = new List<Member>()
+            {
+                new Member() {MemberId = 1, UserName= "abc", StudioID=1},
+                new Member() {MemberId = 2, UserName= "acd", StudioID=1}
+            };
+            objMemberList = _unitOfWork.Member.GetAll(includeProperties: "Studio")
+                .OrderBy(x => x.MemberId).ToList();
+            var result = _memberController.ExportMembersInExcel("", 0);
+            return result;
+        }
+
+        [Fact]
+        public FileResult GenerateExcel_Test()
+        {
+            string fileName = "";
+            var objMemberList= new List<Member>()
+                {
+                new Member() {MemberId = 1},
+                new Member() {MemberId = 2}
+                }; 
+            DataTable dataTable = new DataTable("objMemberList");
+            dataTable.Columns.AddRange(new DataColumn[]
+            {
+                new DataColumn("MemberId"),
+                new DataColumn("UserName"),
+                new DataColumn("FullName"),
+                new DataColumn("DateOfBirth"),
+                new DataColumn("Gender"),
+                new DataColumn("PhoneNumber"),
+                new DataColumn("Email"),
+                new DataColumn("Address"),
+                new DataColumn("JoinedDate"),
+                new DataColumn("StudioID")
+            });
+
+            foreach (var member in objMemberList)
+            {
+                dataTable.Rows.Add(member.MemberId, member.UserName, member.FullName,
+                    member.DateOfBirth.ToString("MM/dd/yyyy"), member.Gender ? "Male" : "Female", member.PhoneNumber, member.Email,
+                    member.Address, member.JoinedDate.ToString("MM/dd/yyyy"), member.StudioID);
+            }
+
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                wb.Worksheets.Add(dataTable);
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    wb.SaveAs(stream);
+                    var result = _memberController.GenerateExcel(fileName, objMemberList);
+                    return result;
+                }
             }
         }
     }

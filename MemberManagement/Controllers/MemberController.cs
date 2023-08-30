@@ -82,7 +82,7 @@ namespace StudioManagement.Controllers
             return GenerateExcel(fileName, objMemberList);
         }
 
-        private FileResult GenerateExcel(string fileName, IEnumerable<Member> objMemberList)
+        public FileResult GenerateExcel(string fileName, IEnumerable<Member> objMemberList)
         {
             DataTable dataTable = new DataTable("objMemberList");
             dataTable.Columns.AddRange(new DataColumn[]
