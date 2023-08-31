@@ -21,6 +21,10 @@ using Syncfusion.Pdf;
 using Microsoft.EntityFrameworkCore;
 using ClosedXML.Excel;
 using System.Data;
+using Google.Protobuf.WellKnownTypes;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Controller;
+using System.IO;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace StudioManagement.Tests.Controller
 {
@@ -105,6 +109,62 @@ namespace StudioManagement.Tests.Controller
             return (studioFromDb);
         }
 
+        [Fact]
+        public Studio Test_Get0_ReturnSuccess()
+        {
+            int MemberId = 0;
+            var studioFromDb = new Studio();
+            _unitOfWork.Member.Get(u => u.MemberId == MemberId);
+            var result = _memberController.Get(MemberId);
+            return (studioFromDb);
+        }
+
+        [Fact]
+        public Studio Test_Delete0_ReturnSuccess()
+        {
+            int MemberId = 0;
+            var studioFromDb = new Studio();
+            _unitOfWork.Member.Get(u => u.MemberId == MemberId);
+            var result = _memberController.Delete(MemberId);
+            return (studioFromDb);
+        }
+        [Fact]
+        public Studio Test_Edit0_ReturnSuccess()
+        {
+            int MemberId = 0;
+            var studioFromDb = new Studio();
+            _unitOfWork.Member.Get(u => u.MemberId == MemberId);
+            var result = _memberController.Edit(MemberId);
+            return (studioFromDb);
+        }
+        [Fact]
+        public void Test_IndexSearch_ReturnViewData()
+        {
+            var strSearch = "c";
+            var pg = 1;
+            var objMemberList = new List<Member>()
+            {
+                new Member() {MemberId = 1, UserName= "a", StudioID=1, ExpiredDate= DateTime.Now.AddDays(-1)},
+                new Member() {MemberId = 2, UserName="b", StudioID=1}
+            };
+            var mockService = new Mock<IUnitOfWork>();
+            mockService.Setup(x => x.Member.GetAll(It.IsAny<string>())).Returns(objMemberList);
+            var mockLogger = new Mock<ILogger<MemberController>>();
+            var controller = new MemberController(_mapper, mockLogger.Object, mockService.Object, _webHostEnvironment, _db);
+            var result = _memberController.MemberIndex(strSearch, pg, 1) as ViewResult;
+            var member = (List<Member>)result?.ViewData.Model;
+            Assert.NotNull(member);
+        }
+        
+        [Fact]
+        public IActionResult Test_GetMember0_ReturnSuccess()
+        {
+            int MemberId = 0;
+            var studioFromDb = new Member();
+            _unitOfWork.Studio.Get(u => u.StudioID == MemberId);
+            var result = _memberController.GetMem(MemberId);
+            return result;
+        }
         [Fact]
         public Studio Test_GetMem_ReturnSuccess()
         {
@@ -212,28 +272,164 @@ namespace StudioManagement.Tests.Controller
         }
 
         [Fact]
-        public IActionResult CreateMember_ModelIsValid_ReturnCreated()
+        public ActionResult ExportToPDF_test()
         {
-            var member = new Member();
-            var file = new Mock<IFormFile>();
+            int MemberId = 1;
+            var htmlConverter = new HtmlToPdfConverter();
+            var blinkConverterSettings = new BlinkConverterSettings();
+            blinkConverterSettings.ViewPortSize = new Syncfusion.Drawing.Size(800, 0);
+            htmlConverter.ConverterSettings = blinkConverterSettings;
+            var document = new PdfDocument();
+            document = htmlConverter.Convert($"https://localhost:7056/Home/GetStudio?StudioID={MemberId}");
+            var stream = new MemoryStream();
+            document.Save(stream);
+            var result = _memberController.ExportToPDF(MemberId);
+            return result;
+        }
+
+        [Fact]
+        public FileResult GenerateExcel_Test()
+        {
+            string fileName = "";
+            var objMemberList= new List<Member>()
+                {
+                new Member() {MemberId = 1},
+                new Member() {MemberId = 2}
+                }; 
+            DataTable dataTable = new DataTable("objMemberList");
+            dataTable.Columns.AddRange(new DataColumn[]
+            {
+                new DataColumn("MemberId"),
+                new DataColumn("UserName"),
+                new DataColumn("FullName"),
+                new DataColumn("DateOfBirth"),
+                new DataColumn("Gender"),
+                new DataColumn("PhoneNumber"),
+                new DataColumn("Email"),
+                new DataColumn("Address"),
+                new DataColumn("JoinedDate"),
+                new DataColumn("StudioID")
+            });
+
+            foreach (var member in objMemberList)
+            {
+                dataTable.Rows.Add(member.MemberId, member.UserName, member.FullName,
+                    member.DateOfBirth.ToString("MM/dd/yyyy"), member.Gender ? "Male" : "Female", member.PhoneNumber, member.Email,
+                    member.Address, member.JoinedDate.ToString("MM/dd/yyyy"), member.StudioID);
+            }
+
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                wb.Worksheets.Add(dataTable);
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    wb.SaveAs(stream);
+                    var result = _memberController.GenerateExcel(fileName, objMemberList);
+                    return result;
+                }
+            }
+        }
+
+        [Fact]
+        public void ExportMembersInExcel_AllNull_Test()
+        {
+            var strSearch = "c";
+            var pg = 1;
+            var objMemberList = new List<Member>()
+            {
+                new Member() {MemberId = 1, UserName= "a", StudioID=1, ExpiredDate= DateTime.Now.AddDays(-1)},
+                new Member() {MemberId = 2, UserName="b", StudioID=1}
+            };
+            var mockService = new Mock<IUnitOfWork>();
+            mockService.Setup(x => x.Member.GetAll(It.IsAny<string>())).Returns(objMemberList);
+            var controller = new MemberController(_mapper, _logger, mockService.Object, _webHostEnvironment, _db);
+            var objList = _db.Member.ToListAsync();
+            var result = controller.ExportMembersInExcel(strSearch, 1);
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public IActionResult CreateMember_InValidModel_ReturnCreated()
+        {
+            //var controller = new MemberController(_mapper, _logger, _unitOfWork, _webHostEnvironment, _db);
+            Member member = new Member()
+            {
+                MemberId = 1,
+                UserName = "UserName",
+                FullName = "FullName",
+                Email = "Email",
+                DateOfBirth = DateTime.Now,
+                Gender = true,
+                JoinedDate = DateTime.Now,
+                PhoneNumber = "00000000"
+            };
+            _memberController.ModelState.AddModelError("Error", "Sample error description");
+            var result = _memberController.Create(member, null);
+            return result;
+        }
+
+        [Fact]
+        public IActionResult UpdateMember_InValidModel_ReturnCreated()
+        {
+            //var controller = new MemberController(_mapper, _logger, _unitOfWork, _webHostEnvironment, _db);
+            Member member = new Member()
+            {
+                MemberId = 1,
+                UserName = "UserName",
+                FullName = "FullName",
+                Email = "Email",
+                DateOfBirth = DateTime.Now,
+                Gender = true,
+                JoinedDate = DateTime.Now,
+                PhoneNumber = "00000000"
+            };
+            _memberController.ModelState.AddModelError("Error", "Sample error description");
+            var result = _memberController.Edit(member, null);
+            return result;
+        }
+
+        [Fact]
+        public void CreateMember_ModelIsValid_ReturnCreated()
+        {
+            var member = new Member()
+            {
+                MemberId = 1,
+                UserName = "UserName",
+                FullName = "FullName",
+                Email = "Email",
+                DateOfBirth = DateTime.Now,
+                Gender = true,
+                JoinedDate = DateTime.Now,
+                PhoneNumber = "00000000"
+            };
+            var fileMock = new Mock<IFormFile>();
             var sourceImg = Path.GetFullPath(@"source image path");
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
-            writer.Write(sourceImg);
-            writer.Flush();
             stream.Position = 0;
             var fileName = "text.jfif";
-            file.Setup(f => f.FileName).Returns(fileName).Verifiable();
-            file.Setup(_ => _.CopyToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+            fileMock.Setup(f => f.FileName).Returns(fileName).Verifiable();
+            fileMock.Setup(_ => _.CopyToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
         .Returns((Stream stream, CancellationToken token) => stream.CopyToAsync(stream))
         .Verifiable();
+            //var mockweb = new Mock<IWebHostEnvironment>();
+            //string wwwRootPath = mockweb.Object.WebRootPath;
+            //var fileName = "23db3c9f-c9e2-454d-8b48-073d30d8e8b1.jfif";
+            //var memberPath= Path.Combine(wwwRootPath, @"images\member");
+            //using (var fileStream = new FileStream(Path.Combine(memberPath, fileName), FileMode.Create)) 
+            //{ fileMock.Object.CopyTo(fileStream); }
+            //member.ImageUrl = @"\images\member\" + fileName;
+            //fileStream.Position = 0;
+            //fileMock.Setup(_ => _.OpenReadStream()).Returns(fileStream);
+            //fileMock.Setup(_ => _.FileName).Returns(fileName);
 
             var controller = new MemberController(_mapper, _logger, _unitOfWork, _webHostEnvironment, _db);
-            var inputFile = file.Object;
-            _unitOfWork.Member.Add(member);
-            _unitOfWork.Save();
-            var result = _memberController.Create(member, inputFile);
-            return result;
+            //_unitOfWork.Member.Add(member);
+            //_unitOfWork.Save();
+            var inputFile = fileMock.Object;
+            var result = controller.Create(member, fileMock.Object);
+            //Assert.IsAssignableFrom<IActionResult>(result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -285,79 +481,6 @@ namespace StudioManagement.Tests.Controller
             _unitOfWork.Save();
             var result = _memberController.DeletePOST(MemberId);
             return result;
-        }
-
-        [Fact]
-        public ActionResult ExportToPDF_test()
-        {
-            int MemberId = 1;
-            var htmlConverter = new HtmlToPdfConverter();
-            var blinkConverterSettings = new BlinkConverterSettings();
-            blinkConverterSettings.ViewPortSize = new Syncfusion.Drawing.Size(800, 0);
-            htmlConverter.ConverterSettings = blinkConverterSettings;
-            var document = new PdfDocument();
-            document = htmlConverter.Convert($"https://localhost:7056/Home/GetStudio?StudioID={MemberId}");
-            var stream = new MemoryStream();
-            document.Save(stream);
-            var result = _memberController.ExportToPDF(MemberId);
-            return result;
-        }
-
-        [Fact]
-        public Task<FileResult> ExportMembersInExcel_AllNull_Test()
-        {
-            var objMemberList = new List<Member>()
-            {
-                new Member() {MemberId = 1, UserName= "abc", StudioID=1},
-                new Member() {MemberId = 2, UserName= "acd", StudioID=1}
-            };
-            objMemberList = _unitOfWork.Member.GetAll(includeProperties: "Studio")
-                .OrderBy(x => x.MemberId).ToList();
-            var result = _memberController.ExportMembersInExcel("", 0);
-            return result;
-        }
-
-        [Fact]
-        public FileResult GenerateExcel_Test()
-        {
-            string fileName = "";
-            var objMemberList= new List<Member>()
-                {
-                new Member() {MemberId = 1},
-                new Member() {MemberId = 2}
-                }; 
-            DataTable dataTable = new DataTable("objMemberList");
-            dataTable.Columns.AddRange(new DataColumn[]
-            {
-                new DataColumn("MemberId"),
-                new DataColumn("UserName"),
-                new DataColumn("FullName"),
-                new DataColumn("DateOfBirth"),
-                new DataColumn("Gender"),
-                new DataColumn("PhoneNumber"),
-                new DataColumn("Email"),
-                new DataColumn("Address"),
-                new DataColumn("JoinedDate"),
-                new DataColumn("StudioID")
-            });
-
-            foreach (var member in objMemberList)
-            {
-                dataTable.Rows.Add(member.MemberId, member.UserName, member.FullName,
-                    member.DateOfBirth.ToString("MM/dd/yyyy"), member.Gender ? "Male" : "Female", member.PhoneNumber, member.Email,
-                    member.Address, member.JoinedDate.ToString("MM/dd/yyyy"), member.StudioID);
-            }
-
-            using (XLWorkbook wb = new XLWorkbook())
-            {
-                wb.Worksheets.Add(dataTable);
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    wb.SaveAs(stream);
-                    var result = _memberController.GenerateExcel(fileName, objMemberList);
-                    return result;
-                }
-            }
         }
     }
 }
