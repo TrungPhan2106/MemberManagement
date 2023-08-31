@@ -120,10 +120,11 @@ namespace StudioManagement.Controllers
         
         public IActionResult Create(int? StudioID, Member member)
         {
-            if (StudioID != 0)
+            if (StudioID > 0)
             {
                 member.StudioID = (int)StudioID;
             }
+
             IEnumerable<SelectListItem> StudioList = _unitOfWork.Studio
                 .GetAll().Select(u => new SelectListItem
             {
