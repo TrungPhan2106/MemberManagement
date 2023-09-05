@@ -263,13 +263,14 @@ namespace StudioManagement.Controllers
             {
                 return NotFound();
             }
-
-            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, obj.ImageUrl.TrimStart('\\'));
-            if (System.IO.File.Exists(oldImagePath))
+            if(obj.ImageUrl != null) 
             {
-                System.IO.File.Delete(oldImagePath);
+                var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, obj.ImageUrl.TrimStart('\\'));
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
             }
-
             _unitOfWork.Member.Remove(obj);
             _unitOfWork.Save();
             TempData["success"] = "Member deleted successfully";

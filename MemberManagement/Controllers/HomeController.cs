@@ -166,14 +166,21 @@ namespace StudioManagement.Controllers
             {
                 return NotFound();
             }
-            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, obj.StudioPic.TrimStart('\\'));
-            if (System.IO.File.Exists(oldImagePath))
+            var memlist = _unitOfWork.Member.GetAll(includeProperties: "Studio")
+                .ToList().Where(x => x.StudioID == StudioID).ToList();
+            if(memlist.Count == 0)
             {
-                System.IO.File.Delete(oldImagePath);
+                var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, obj.StudioPic.TrimStart('\\'));
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
+                _unitOfWork.Studio.Remove(obj);
+                _unitOfWork.Save();
+                TempData["success"] = "Studio deleted successfully";
+                return RedirectToAction("Index");
             }
-            _unitOfWork.Studio.Remove(obj);
-            _unitOfWork.Save();
-            TempData["success"] = "Studio deleted successfully";
+            TempData["error"] = "Error - Members had founded";
             return RedirectToAction("Index");
         }
 
