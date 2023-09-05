@@ -25,6 +25,7 @@ using Google.Protobuf.WellKnownTypes;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Controller;
 using System.IO;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Linq.Expressions;
 
 namespace StudioManagement.Tests.Controller
 {
@@ -388,6 +389,64 @@ namespace StudioManagement.Tests.Controller
             return result;
         }
 
+        [Fact]
+        public IActionResult Test_Edit_NotFound_ReturnSuccess()
+        {
+            int MemberId = 1;
+            var member = null as Member;
+            var mockService1 = new Mock<IUnitOfWork>();
+            mockService1.Setup(x => x.Member.Get(It.IsAny<Expression<Func<Member, bool>>>(), It.IsAny<string>())).Returns(member);
+            var controller = new MemberController(_mapper,_logger, mockService1.Object, _webHostEnvironment, _db);
+            var result = controller.Edit(MemberId);
+            return result;
+        }
+        [Fact]
+        public IActionResult Test_Delete_NotFound_ReturnSuccess()
+        {
+            int MemberId = 1;
+            var member = null as Member;
+            var mockService1 = new Mock<IUnitOfWork>();
+            mockService1.Setup(x => x.Member.Get(It.IsAny<Expression<Func<Member, bool>>>(), It.IsAny<string>())).Returns(member);
+            var controller = new MemberController(_mapper, _logger, mockService1.Object, _webHostEnvironment, _db);
+            var result = controller.Delete(MemberId);
+            return result;
+        }
+
+        [Fact]
+        public IActionResult Test_DeletePost_NotFound_ReturnSuccess()
+        {
+            int MemberId = 1;
+            var member = null as Member;
+            var mockService1 = new Mock<IUnitOfWork>();
+            mockService1.Setup(x => x.Member.Get(It.IsAny<Expression<Func<Member, bool>>>(), It.IsAny<string>())).Returns(member);
+            var controller = new MemberController(_mapper, _logger, mockService1.Object, _webHostEnvironment, _db);
+            var result = controller.DeletePOST(MemberId);
+            return result;
+        }
+
+        [Fact]
+        public IActionResult Test_Get_NotFound_ReturnSuccess()
+        {
+            int MemberId = 1;
+            var member = null as Member;
+            var mockService1 = new Mock<IUnitOfWork>();
+            mockService1.Setup(x => x.Member.Get(It.IsAny<Expression<Func<Member, bool>>>(), It.IsAny<string>())).Returns(member);
+            var controller = new MemberController(_mapper, _logger, mockService1.Object, _webHostEnvironment, _db);
+            var result = controller.Get(MemberId);
+            return result;
+        }
+
+        [Fact]
+        public IActionResult Test_GetMem_NotFound_ReturnSuccess()
+        {
+            int MemberId = 1;
+            var member = null as Member;
+            var mockService1 = new Mock<IUnitOfWork>();
+            mockService1.Setup(x => x.Member.Get(It.IsAny<Expression<Func<Member, bool>>>(), It.IsAny<string>())).Returns(member);
+            var controller = new MemberController(_mapper, _logger, mockService1.Object, _webHostEnvironment, _db);
+            var result = controller.GetMem(MemberId);
+            return result;
+        }
         [Fact]
         public void CreateMember_ModelIsValid_ReturnCreated()
         {

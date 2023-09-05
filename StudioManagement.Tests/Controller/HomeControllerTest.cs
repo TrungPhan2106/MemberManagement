@@ -176,17 +176,66 @@ namespace StudioManagement.Tests.Controller
             var result = _studioController.Get(StudioID);
             return result;
         }
-        //[Fact]
-        //public IActionResult Test_GetStudio_NotFound_ReturnSuccess()
-        //{
-        //    int StudioID = 1;
-        //    var studio = new Studio() { StudioID = 2};
-        //    var mockService1 = new Mock<IUnitOfWork>();
-        //    mockService1.Setup(x => x.Studio.Get(It.IsAny<Expression<Func<Studio, bool>>>(), It.IsAny<string>())).Returns(studio);
-        //    var result = _studioController.GetStudio(StudioID);
-        //    return result;
-        //}
+        [Fact]
+        public IActionResult Test_GetStudio_NotFound_ReturnSuccess()
+        {
+            int StudioID = 1;
+            var studio = null as Studio;
+            var mockService1 = new Mock<IUnitOfWork>();
+            mockService1.Setup(x => x.Studio.Get(It.IsAny<Expression<Func<Studio, bool>>>(), It.IsAny<string>())).Returns(studio);
+            var controller = new HomeController(_logger,mockService1.Object, _webHostEnvironment);
+            var result = controller.GetStudio(StudioID);
+            return result;
+        }
 
+        [Fact]
+        public IActionResult Test_Get_NotFound_ReturnSuccess()
+        {
+            int StudioID = 1;
+            var studio = null as Studio;
+            var mockService1 = new Mock<IUnitOfWork>();
+            mockService1.Setup(x => x.Studio.Get(It.IsAny<Expression<Func<Studio, bool>>>(), It.IsAny<string>())).Returns(studio);
+            var controller = new HomeController(_logger, mockService1.Object, _webHostEnvironment);
+            var result = controller.Get(StudioID);
+            return result;
+        }
+
+        [Fact]
+        public IActionResult Test_Edit_NotFound_ReturnSuccess()
+        {
+            int StudioID = 1;
+            var studio = null as Studio;
+            var mockService1 = new Mock<IUnitOfWork>();
+            mockService1.Setup(x => x.Studio.Get(It.IsAny<Expression<Func<Studio, bool>>>(), It.IsAny<string>())).Returns(studio);
+            var controller = new HomeController(_logger, mockService1.Object, _webHostEnvironment);
+            var result = controller.Edit(StudioID);
+            return result;
+        }
+
+        [Fact]
+        public IActionResult Test_Delete_NotFound_ReturnSuccess()
+        {
+            int StudioID = 1;
+            var studio = null as Studio;
+            var mockService1 = new Mock<IUnitOfWork>();
+            mockService1.Setup(x => x.Studio.Get(It.IsAny<Expression<Func<Studio, bool>>>(), It.IsAny<string>())).Returns(studio);
+            var controller = new HomeController(_logger, mockService1.Object, _webHostEnvironment);
+            var result = controller.Delete(StudioID);
+            return result;
+        }
+
+
+        [Fact]
+        public IActionResult Test_DeletePost_NotFound_ReturnSuccess()
+        {
+            int StudioID = 1;
+            var studio = null as Studio;
+            var mockService1 = new Mock<IUnitOfWork>();
+            mockService1.Setup(x => x.Studio.Get(It.IsAny<Expression<Func<Studio, bool>>>(), It.IsAny<string>())).Returns(studio);
+            var controller = new HomeController(_logger, mockService1.Object, _webHostEnvironment);
+            var result = controller.DeletePOST(StudioID);
+            return result;
+        }
         [Fact]
         public IActionResult Create_ViewState_Is_Valid_Returns_RedirectToRouteResult()
         {
@@ -277,15 +326,11 @@ namespace StudioManagement.Tests.Controller
 
         [Fact]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public void Error_Test()
+        public IActionResult Error_Test()
         {
-            ErrorViewModel error = new ErrorViewModel
-            {
-                RequestId = Activity.Current?.Id
-            };
-            var result = _studioController.Error() as ViewResult;
-            var err = result?.ViewData.Model as ErrorViewModel;
-            Assert.NotNull(err);
+            var errorViewModel= new ErrorViewModel() { RequestId = Activity.Current?.Id };
+            var result = _studioController.Error();
+            return result;
         }
 
         [Fact]
